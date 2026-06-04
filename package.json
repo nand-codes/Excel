@@ -1,0 +1,54 @@
+{
+  "name": "excel-driving-school",
+  "version": "1.0.0",
+  "description": "Excel Driving School — Client Management System",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nandana-suresh-c/Excel.git"
+  },
+  "keywords": [],
+  "author": "Excel Driving School",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nandana-suresh-c/Excel/issues"
+  },
+  "homepage": "https://github.com/nandana-suresh-c/Excel#readme",
+  "build": {
+    "appId": "com.exceldrivingschool.clientmanager",
+    "productName": "Excel Driving School",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "package.json",
+      "main.js",
+      "preload.js",
+      "index.html",
+      "style.css",
+      "app.js",
+      "services/**/*",
+      "db/**/*",
+      "icon.png"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "icon.png",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "ExcelDrivingSchool.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^42.3.2",
+    "electron-builder": "^25.1.8",
+    "electron-packager": "^17.1.2"
+  }
+}
