@@ -38,28 +38,30 @@ export function Topbar({
   return (
     <header
       className={cn(
-        'bg-page/70 border-line sticky top-0 z-20 flex h-[58px] items-center gap-3 border-b px-4 backdrop-blur-2xl',
-        'lg:px-6'
+        'bg-sidebar border-line sticky top-0 z-20 flex h-[52px] items-center gap-3 border-b px-4 backdrop-blur-[20px] backdrop-saturate-150',
+        'lg:px-8'
       )}
     >
       <IconButton label="Toggle sidebar" onClick={onToggleSidebar} className="lg:hidden">
         <IconMenu size={18} />
       </IconButton>
 
-      <h1 className="font-display text-ink truncate text-[17px] font-bold">{title}</h1>
+      {/* Each page carries its own large title, so the toolbar only names the section on
+          small screens where the sidebar is hidden. */}
+      <h1 className="text-ink truncate text-[14px] font-semibold lg:hidden">{title}</h1>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1.5">
         {showSearch ? (
-          <div className="bg-field rounded-ctl border-line focus-within:border-accent focus-within:ring-accent-ring flex h-9 items-center gap-2 border px-2.5 transition-[border-color,box-shadow] focus-within:ring-3">
-            <IconSearch size={15} className="text-muted shrink-0" />
+          <div className="bg-field border-line focus-within:border-accent focus-within:ring-accent-ring flex h-[30px] items-center gap-1.5 rounded-full border px-3 transition-[border-color,box-shadow] focus-within:ring-3">
+            <IconSearch size={14} className="text-muted shrink-0" />
             <input
               ref={inputRef}
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search clients…"
+              placeholder="Search"
               aria-label="Search clients"
-              className="text-ink placeholder:text-placeholder w-[130px] bg-transparent text-[13px] outline-none sm:w-[220px]"
+              className="text-ink placeholder:text-placeholder w-[110px] bg-transparent text-[13px] outline-none focus-visible:shadow-none sm:w-[200px]"
             />
           </div>
         ) : null}
@@ -68,19 +70,17 @@ export function Topbar({
           label={appearance === 'dark' ? 'Switch to light appearance' : 'Switch to dark appearance'}
           onClick={onToggleAppearance}
         >
-          {appearance === 'dark' ? <IconMoon size={17} /> : <IconSun size={17} />}
+          {appearance === 'dark' ? <IconMoon size={16} /> : <IconSun size={16} />}
         </IconButton>
 
-        <span className="text-muted hidden text-[12.5px] font-semibold xl:inline">{today}</span>
+        <span className="text-muted hidden text-[12px] xl:inline">{today}</span>
 
-        <div className="border-line ml-1 flex items-center gap-2 border-l pl-2.5">
-          <span className="text-ink-soft hidden max-w-[140px] truncate text-[12.5px] font-semibold sm:inline">
-            {user.displayName}
-          </span>
-          <IconButton label="Sign out" onClick={onSignOut}>
-            <IconLogout size={17} />
-          </IconButton>
-        </div>
+        <span className="text-ink-soft ml-1.5 hidden max-w-[140px] truncate text-[12.5px] font-medium sm:inline">
+          {user.displayName}
+        </span>
+        <IconButton label="Sign out" onClick={onSignOut}>
+          <IconLogout size={16} />
+        </IconButton>
       </div>
     </header>
   );

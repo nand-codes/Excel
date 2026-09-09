@@ -45,11 +45,11 @@ export function Select({
         aria-label={ariaLabel}
         aria-invalid={invalid || undefined}
         className={cn(
-          'rounded-ctl bg-field border-line text-ink flex items-center justify-between gap-2 border px-3',
+          'rounded-ctl bg-field border-line-strong text-ink flex items-center justify-between gap-2 border px-3',
           fullWidth ? 'w-full' : 'w-auto',
-          'focus:border-accent focus:ring-accent-ring text-left transition-[border-color,box-shadow] duration-150 focus:ring-3 focus:outline-none',
+          'focus:border-accent focus:ring-accent-ring focus-visible:shadow-none text-left transition-[border-color,box-shadow] duration-150 focus:ring-3 focus:outline-none',
           'data-[placeholder]:text-placeholder',
-          size === 'sm' ? 'h-8 text-[12.5px]' : 'h-10 text-[13.5px]',
+          size === 'sm' ? 'h-[30px] text-[12.5px]' : 'h-9 text-[13px]',
           invalid && 'border-sys-red focus:border-sys-red',
           className
         )}
@@ -75,7 +75,7 @@ export function Select({
                 key={option.value}
                 value={option.value}
                 className={cn(
-                  'rounded-ctl text-ink flex cursor-pointer items-center justify-between gap-3 px-2.5 py-2 text-[13px] select-none',
+                  'rounded-[6px] text-ink flex cursor-pointer items-center justify-between gap-3 px-2.5 py-1.5 text-[13px] select-none',
                   'data-[highlighted]:bg-accent data-[highlighted]:text-white data-[highlighted]:outline-none'
                 )}
               >

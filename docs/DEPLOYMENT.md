@@ -138,17 +138,19 @@ be in for one more step.
 There is no self-signup by design. Each account is created on the server:
 
 ```bash
-cd /opt/excel-ds
-sudo -u excelds EXCEL_DB_PATH=/var/lib/excel-ds/clients.sqlite \
-  node scripts/user-cli.js add --username asha --name "Asha" --role admin
+sudo -u excelds env EXCEL_DB_PATH=/var/lib/excel-ds/clients.sqlite node /opt/excel-ds/scripts/user-cli.js add --username asha --role admin
 ```
+
+Keep that on one line. Line continuations get mangled when pasted into the Lightsail browser
+terminal, and `env` is there because `sudo -u user VAR=value cmd` is refused under some
+sudoers policies — without it the command runs as the wrong user against the wrong database.
 
 The tool prompts for the password without echoing it and requires at least 10 characters.
 Repeat with `--role staff` for the other two. Give each person their own account: the audit
 trail and the 409-conflict messages are only meaningful if sessions map to people.
 
 ```bash
-sudo -u excelds EXCEL_DB_PATH=/var/lib/excel-ds/clients.sqlite node scripts/user-cli.js list
+sudo -u excelds env EXCEL_DB_PATH=/var/lib/excel-ds/clients.sqlite node /opt/excel-ds/scripts/user-cli.js list
 ```
 
 Sign in from a browser and confirm you can add a client. The app is now live.
@@ -282,9 +284,9 @@ Budget about 15 minutes. This is the accepted downside of running a single insta
   held on purpose; to move to a new Node major, `sudo apt-mark unhold nodejs`, upgrade, run
   `npm test` on the instance, then hold it again.
 - **Certificates:** Caddy renews them by itself. Nothing to do.
-- **Passwords:** `node scripts/user-cli.js passwd --username asha` (same `sudo -u excelds`
-  and `EXCEL_DB_PATH` prefix as above). Removing someone with
-  `scripts/user-cli.js remove` also deletes their sessions, so access ends immediately.
+- **Passwords:** `user-cli.js passwd --username asha`, with the same
+  `sudo -u excelds env EXCEL_DB_PATH=...` prefix as above. Removing someone with
+  `user-cli.js remove` also deletes their sessions, so access ends immediately.
 - **Disk:** `df -h`. The database and its backups are tiny; the usual culprit is logs.
 
 ## Troubleshooting

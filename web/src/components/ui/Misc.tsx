@@ -10,18 +10,18 @@ interface AvatarProps {
 }
 
 const AVATAR_SIZES = {
-  sm: 'h-8 w-8 rounded-[9px] text-[13px]',
-  md: 'h-[34px] w-[34px] rounded-ctl text-[14px]',
-  lg: 'h-14 w-14 rounded-card text-[24px]',
+  sm: 'h-7 w-7 text-[12px]',
+  md: 'h-8 w-8 text-[13px]',
+  lg: 'h-13 w-13 text-[22px]',
 };
 
+/** Circular and flat, like Contacts — the gradient rounded square read as a web app. */
 export function Avatar({ name, size = 'md', className }: AvatarProps) {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        'font-display flex shrink-0 items-center justify-center font-extrabold text-white',
-        'bg-gradient-to-br from-[var(--app-accent)] to-[var(--app-accent-hover)]',
+        'bg-accent-light text-accent flex shrink-0 items-center justify-center rounded-full font-semibold',
         AVATAR_SIZES[size],
         className
       )}
@@ -51,10 +51,10 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 px-6 py-12 text-center">
-      <p className="text-ink text-[14px] font-semibold">{title}</p>
-      {hint ? <p className="text-muted max-w-[46ch] text-[12.5px]">{hint}</p> : null}
-      {action ? <div className="mt-2">{action}</div> : null}
+    <div className="flex flex-col items-center justify-center gap-1.5 px-6 py-16 text-center">
+      <p className="text-ink text-[15px] font-semibold">{title}</p>
+      {hint ? <p className="text-muted max-w-[46ch] text-[13px] leading-relaxed">{hint}</p> : null}
+      {action ? <div className="mt-3">{action}</div> : null}
     </div>
   );
 }
@@ -101,7 +101,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className={cn('bg-field rounded-ctl border-line flex gap-0.5 border p-0.5', className)}
+      className={cn('bg-hover rounded-[9px] flex gap-0.5 p-0.5', className)}
     >
       {options.map((option) => {
         const active = option.value === value;
@@ -113,7 +113,7 @@ export function SegmentedControl<T extends string>({
             aria-checked={active}
             onClick={() => onChange(option.value)}
             className={cn(
-              'rounded-[7px] px-2.5 py-1 text-[12px] font-semibold transition-colors duration-150',
+              'rounded-[7px] px-3 py-1 text-[12.5px] font-medium transition-colors duration-150',
               active ? 'bg-elevated text-ink shadow-mac' : 'text-muted hover:text-ink'
             )}
           >

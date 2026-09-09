@@ -2,10 +2,20 @@ import type { HTMLAttributes, ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 
-export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  /** Lifts and brightens on hover; for tiles that summarise something. */
+  interactive?: boolean;
+}
+
+export function Card({ interactive, className, ...props }: CardProps) {
   return (
     <div
-      className={cn('bg-card border-line rounded-card shadow-mac border', className)}
+      className={cn(
+        'glass rounded-card shadow-mac',
+        interactive &&
+          'hover:bg-card-hover hover:border-line-strong transition-[background-color,border-color,transform,box-shadow] duration-300 ease-[var(--ease-mac)] hover:-translate-y-0.5 hover:shadow-mac-lg',
+        className
+      )}
       {...props}
     />
   );
@@ -23,15 +33,15 @@ export function CardHeader({ title, icon, badge, actions, className }: CardHeade
   return (
     <div
       className={cn(
-        'border-divider flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3',
+        'flex flex-wrap items-center justify-between gap-3 px-5 pt-4 pb-3',
         className
       )}
     >
       <div className="flex min-w-0 items-center gap-2">
         {icon ? <span className="text-muted shrink-0">{icon}</span> : null}
-        <h3 className="font-display text-ink truncate text-[15px] font-bold">{title}</h3>
+        <h3 className="text-ink truncate text-[14.5px] font-semibold">{title}</h3>
         {badge ? (
-          <span className="pill pill-accent shrink-0" aria-hidden="true">
+          <span className="text-muted shrink-0 text-[12.5px]" aria-hidden="true">
             {badge}
           </span>
         ) : null}
@@ -42,5 +52,5 @@ export function CardHeader({ title, icon, badge, actions, className }: CardHeade
 }
 
 export function CardBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('p-4', className)} {...props} />;
+  return <div className={cn('px-5 pt-1 pb-5', className)} {...props} />;
 }

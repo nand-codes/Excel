@@ -8,83 +8,96 @@
    See docs/APP_SPEC.md for the authoritative list.
    ────────────────────────────────────────────────────────────── */
 :root {
-  --app-accent: #007aff;
+  --app-accent: #0071e3;
   --app-accent-secondary: #004aad;
-  --app-accent-hover: #0051d5;
-  --app-accent-light: rgb(0 122 255 / 0.12);
-  --app-accent-subtle: rgb(0 122 255 / 0.06);
-  --app-accent-ring: rgb(0 122 255 / 0.18);
+  --app-accent-hover: #0077ed;
+  --app-accent-light: rgb(0 113 227 / 0.1);
+  --app-accent-subtle: rgb(0 113 227 / 0.05);
+  --app-accent-ring: rgb(0 113 227 / 0.28);
 
-  --app-hero-start: #007aff;
+  --app-hero-start: #0071e3;
   --app-hero-mid: #5ac8fa;
   --app-hero-end: #34c7ff;
 
-  --app-page: #f2f2f7;
+  --app-page: #f5f5f7;
   --app-elevated: #ffffff;
-  --app-card: #ffffff;
-  --app-sidebar: rgb(248 248 250 / 0.88);
-  --app-input: rgb(118 118 128 / 0.1);
-  --app-hover: rgb(0 0 0 / 0.04);
+  --app-card: rgb(255 255 255 / 0.72);
+  --app-card-hover: rgb(255 255 255 / 0.88);
+  --app-thead: rgb(255 255 255 / 0.82);
+  --app-sidebar: rgb(250 250 252 / 0.72);
+  --app-input: rgb(255 255 255 / 0.9);
+  --app-hover: rgb(0 0 0 / 0.035);
+  --app-glow-a: rgb(0 113 227 / 0.1);
+  --app-glow-b: rgb(137 68 171 / 0.07);
 
-  --app-line: rgb(0 0 0 / 0.08);
-  --app-line-strong: rgb(0 0 0 / 0.16);
-  --app-divider: rgb(0 0 0 / 0.06);
+  --app-line: rgb(0 0 0 / 0.07);
+  --app-line-strong: rgb(0 0 0 / 0.13);
+  --app-divider: rgb(0 0 0 / 0.05);
 
-  --app-ink: #1c1c1e;
-  --app-ink-soft: #3a3a3c;
-  --app-muted: #8e8e93;
+  --app-ink: #1d1d1f;
+  --app-ink-soft: #424245;
+  --app-muted: #86868b;
   --app-placeholder: #aeaeb2;
 
-  --app-green: #34c759;
-  --app-red: #ff3b30;
-  --app-blue: #007aff;
-  --app-purple: #af52de;
-  --app-teal: #32ade6;
+  --app-green: #248a3d;
+  --app-red: #d70015;
+  --app-blue: #0071e3;
+  --app-purple: #8944ab;
+  --app-teal: #0a7e8c;
 
-  --app-shadow: 0 2px 8px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
-  --app-shadow-lg: 0 8px 32px rgb(0 0 0 / 0.1), 0 2px 8px rgb(0 0 0 / 0.05);
-  --app-shadow-sheet: 0 24px 72px rgb(0 0 0 / 0.15), 0 4px 16px rgb(0 0 0 / 0.08);
-  --app-scrollbar: rgb(0 0 0 / 0.14);
+  /* Apple's surfaces sit on the page rather than float above it: one hairline and a
+     whisper of shadow, never a drop shadow you can point at. */
+  --app-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  --app-shadow-lg: 0 4px 16px rgb(0 0 0 / 0.06), 0 1px 3px rgb(0 0 0 / 0.04);
+  --app-shadow-sheet: 0 32px 64px rgb(0 0 0 / 0.18), 0 2px 8px rgb(0 0 0 / 0.06);
+  --app-scrollbar: rgb(0 0 0 / 0.16);
 }
 
 html.dark {
   --app-accent: #0a84ff;
   --app-accent-secondary: #b0deff;
-  --app-accent-hover: #2488ff;
-  --app-accent-light: rgb(10 132 255 / 0.2);
-  --app-accent-subtle: rgb(10 132 255 / 0.1);
-  --app-accent-ring: rgb(10 132 255 / 0.24);
+  --app-accent-hover: #409cff;
+  --app-accent-light: rgb(10 132 255 / 0.18);
+  --app-accent-subtle: rgb(10 132 255 / 0.09);
+  --app-accent-ring: rgb(10 132 255 / 0.36);
 
   --app-hero-start: #0a84ff;
   --app-hero-mid: #5ac8fa;
   --app-hero-end: #30b9c4;
 
+  /* Deep black, the way Apple's dark marketing pages are built: the surfaces are
+     translucent white films over the black rather than lighter greys. */
   --app-page: #000000;
-  --app-elevated: #0d0d0d;
-  --app-card: #0d0d0d;
-  --app-sidebar: rgb(13 13 13 / 0.95);
-  --app-input: rgb(118 118 128 / 0.18);
-  --app-hover: rgb(255 255 255 / 0.08);
+  --app-elevated: rgb(28 28 30 / 0.82);
+  --app-card: rgb(255 255 255 / 0.05);
+  --app-card-hover: rgb(255 255 255 / 0.08);
+  --app-thead: rgb(10 10 12 / 0.88);
+  --app-sidebar: rgb(0 0 0 / 0.55);
+  --app-input: rgb(255 255 255 / 0.06);
+  --app-hover: rgb(255 255 255 / 0.07);
 
   --app-line: rgb(255 255 255 / 0.12);
-  --app-line-strong: rgb(255 255 255 / 0.2);
-  --app-divider: rgb(255 255 255 / 0.1);
+  --app-line-strong: rgb(255 255 255 / 0.22);
+  --app-divider: rgb(255 255 255 / 0.08);
 
   --app-ink: #ffffff;
-  --app-ink-soft: #f0f0f0;
-  --app-muted: #8e8e93;
-  --app-placeholder: #5a5a5c;
+  --app-ink-soft: #d2d2d7;
+  --app-muted: #86868b;
+  --app-placeholder: #6e6e73;
 
-  --app-green: #30b14b;
+  --app-glow-a: rgb(10 132 255 / 0.16);
+  --app-glow-b: rgb(191 90 242 / 0.1);
+
+  --app-green: #30d158;
   --app-red: #ff453a;
   --app-blue: #0a84ff;
   --app-purple: #bf5af2;
-  --app-teal: #30b9c4;
+  --app-teal: #40c8e0;
 
-  --app-shadow: 0 2px 8px rgb(0 0 0 / 0.5), 0 1px 2px rgb(0 0 0 / 0.32);
-  --app-shadow-lg: 0 8px 32px rgb(0 0 0 / 0.56), 0 2px 8px rgb(0 0 0 / 0.32);
-  --app-shadow-sheet: 0 24px 72px rgb(0 0 0 / 0.72), 0 4px 16px rgb(0 0 0 / 0.4);
-  --app-scrollbar: rgb(255 255 255 / 0.18);
+  --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --app-shadow-lg: 0 4px 16px rgb(0 0 0 / 0.5), 0 1px 3px rgb(0 0 0 / 0.4);
+  --app-shadow-sheet: 0 32px 64px rgb(0 0 0 / 0.7), 0 2px 8px rgb(0 0 0 / 0.5);
+  --app-scrollbar: rgb(255 255 255 / 0.2);
 }
 
 /* `inline` keeps the utilities pointing at the variables above, so switching the
@@ -100,6 +113,8 @@ html.dark {
   --color-page: var(--app-page);
   --color-elevated: var(--app-elevated);
   --color-card: var(--app-card);
+  --color-card-hover: var(--app-card-hover);
+  --color-thead: var(--app-thead);
   --color-sidebar: var(--app-sidebar);
   --color-field: var(--app-input);
   --color-hover: var(--app-hover);
@@ -119,10 +134,10 @@ html.dark {
   --color-sys-purple: var(--app-purple);
   --color-sys-teal: var(--app-teal);
 
-  --radius-ctl: 10px;
-  --radius-card: 14px;
-  --radius-sheet: 18px;
-  --radius-hero: 22px;
+  --radius-ctl: 8px;
+  --radius-card: 16px;
+  --radius-sheet: 20px;
+  --radius-hero: 20px;
 
   --shadow-mac: var(--app-shadow);
   --shadow-mac-lg: var(--app-shadow-lg);
@@ -148,6 +163,26 @@ html.dark {
   body {
     @apply bg-page text-ink font-sans antialiased;
     min-height: 100vh;
+    letter-spacing: -0.01em;
+
+    /* Two soft, fixed pools of colour. They are what the frosted surfaces sample —
+       blurring flat black would look identical to flat black. */
+    background-image:
+      radial-gradient(60rem 40rem at 12% -8%, var(--app-glow-a), transparent 60%),
+      radial-gradient(52rem 36rem at 92% 4%, var(--app-glow-b), transparent 60%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  /* Apple tightens tracking as type grows; without this, large headings look loose. */
+  h1,
+  h2,
+  .display-lg {
+    letter-spacing: -0.022em;
+  }
+  h3,
+  h4 {
+    letter-spacing: -0.016em;
   }
 
   ::selection {
@@ -167,9 +202,13 @@ html.dark {
     border-radius: 99px;
   }
 
+  /* A soft halo rather than a hard outline, which is what macOS focus looks like. */
   :focus-visible {
-    outline: 2px solid var(--app-accent);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow:
+      0 0 0 3px var(--app-accent-ring),
+      0 0 0 1px var(--app-accent);
+    border-radius: var(--radius-ctl);
   }
 
   input[type='date']::-webkit-calendar-picker-indicator {
@@ -182,36 +221,60 @@ html.dark {
 }
 
 @layer components {
-  /* Grouped inset table, the way macOS renders lists. */
+  /* A thin film over the page rather than a solid panel: 20px of blur, one hairline
+     and no fill of its own. */
+  .glass {
+    background-color: var(--app-card);
+    border: 1px solid var(--app-line);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* macOS lists: sentence-case headings, roomy rows, hairline separators and no
+     heavy header band. The old uppercase grey bar was the least Apple thing here. */
   .mac-table {
-    @apply w-full border-collapse text-left text-[13.5px];
+    @apply w-full border-collapse text-left text-[13px];
   }
   .mac-table thead th {
-    @apply bg-field/60 text-muted sticky top-0 z-10 px-3 py-2.5 text-[11.5px] font-semibold tracking-wide uppercase backdrop-blur-xl;
+    @apply bg-thead text-muted sticky top-0 z-10 px-4 py-2.5 text-[12px] font-medium whitespace-nowrap backdrop-blur-xl;
+  }
+  .mac-table thead tr {
+    @apply border-line border-b;
   }
   .mac-table tbody td {
-    @apply border-divider border-t px-3 py-2.5 align-middle;
+    @apply border-divider border-t px-4 py-3 align-middle;
+  }
+  .mac-table tbody tr:first-child td {
+    @apply border-t-0;
+  }
+  .mac-table tbody tr {
+    @apply transition-colors duration-100;
   }
   .mac-table tbody tr:hover td {
     @apply bg-hover;
   }
 
   .pill {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold whitespace-nowrap;
+    @apply inline-flex items-center rounded-full px-2 py-[3px] text-[11.5px] font-medium whitespace-nowrap;
   }
   .pill-accent {
     @apply bg-accent-light text-accent;
   }
   .pill-blood {
     @apply text-sys-red;
-    background: color-mix(in srgb, var(--app-red) 14%, transparent);
+    background: color-mix(in srgb, var(--app-red) 9%, transparent);
   }
 
   .field-label {
-    @apply text-ink-soft mb-1.5 block text-[12.5px] font-semibold;
+    @apply text-ink-soft mb-1.5 block text-[12.5px] font-medium;
   }
   .field-error {
-    @apply text-sys-red mt-1 block text-[11.5px] font-medium;
+    @apply text-sys-red mt-1.5 block text-[11.5px];
+  }
+
+  /* Section heading above a group of cards, like System Settings. */
+  .section-eyebrow {
+    @apply text-muted text-[12px] font-medium;
   }
 }
 

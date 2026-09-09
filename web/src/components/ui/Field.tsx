@@ -32,9 +32,9 @@ export function Field({ id, label, error, hint, optional, className, children }:
 }
 
 const CONTROL_CLASSES =
-  'w-full rounded-ctl bg-field border border-line px-3 text-[13.5px] text-ink ' +
+  'w-full rounded-ctl bg-field border border-line-strong px-3 text-[13px] text-ink ' +
   'placeholder:text-placeholder transition-[border-color,box-shadow] duration-150 ' +
-  'focus:border-accent focus:outline-none focus:ring-3 focus:ring-accent-ring ' +
+  'focus:border-accent focus:outline-none focus:ring-3 focus:ring-accent-ring focus-visible:shadow-none ' +
   'disabled:opacity-60';
 
 export const controlClasses = CONTROL_CLASSES;
@@ -46,7 +46,7 @@ interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
 export function TextInput({ invalid, className, ...props }: TextInputProps) {
   return (
     <input
-      className={cn(CONTROL_CLASSES, 'h-10', invalid && 'border-sys-red focus:border-sys-red', className)}
+      className={cn(CONTROL_CLASSES, 'h-9', invalid && 'border-sys-red focus:border-sys-red', className)}
       aria-invalid={invalid || undefined}
       {...props}
     />
@@ -82,7 +82,7 @@ export function Checkbox({ label, className, id, ...props }: CheckboxProps) {
     <label
       htmlFor={id}
       className={cn(
-        'rounded-ctl bg-field/70 border-line hover:bg-hover flex cursor-pointer items-center gap-2.5 border px-3 py-2.5 text-[13px] transition-colors',
+        'rounded-ctl border-line hover:bg-hover flex cursor-pointer items-center gap-2.5 border px-3 py-2.5 text-[13px] transition-colors',
         className
       )}
     >

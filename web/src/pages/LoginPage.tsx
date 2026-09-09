@@ -39,26 +39,34 @@ export function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-16">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/2 h-[420px] w-[820px] max-w-[140vw] -translate-x-1/2 rounded-full opacity-25 blur-3xl"
+        className="pointer-events-none absolute -top-52 left-1/2 h-[520px] w-[900px] max-w-[150vw] -translate-x-1/2 rounded-full opacity-40 blur-[120px]"
         style={{
           background:
-            'linear-gradient(135deg, var(--app-hero-start), var(--app-hero-mid), var(--app-hero-end))',
+            'radial-gradient(circle at 50% 50%, var(--app-accent), transparent 70%)',
         }}
       />
 
-      <div className="bg-card/90 border-line rounded-sheet shadow-mac-lg relative w-full max-w-[400px] border p-7 backdrop-blur-2xl">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <img src="/icon.png" alt="" width={56} height={56} className="rounded-card" />
-          <div>
-            <h1 className="font-display text-ink text-[20px] font-extrabold">Excel Driving School</h1>
-            <p className="text-muted mt-0.5 text-[12.5px]">Client Management System</p>
-          </div>
-        </div>
+      <div className="relative flex flex-col items-center text-center">
+        <img
+          src="/icon.png"
+          alt=""
+          width={72}
+          height={72}
+          className="rounded-[18px] shadow-mac-lg"
+        />
+        <h1 className="text-ink mt-7 text-[38px] leading-[1.05] font-bold sm:text-[44px]">
+          Excel Driving School
+        </h1>
+        <p className="text-muted mt-3 max-w-[34ch] text-[15px] leading-relaxed">
+          Sign in to manage clients, payments and practice sessions.
+        </p>
+      </div>
 
-        <form onSubmit={onSubmit} className="mt-7 space-y-4">
+      <div className="glass rounded-sheet shadow-mac-lg relative mt-12 w-full max-w-[420px] p-8">
+        <form onSubmit={onSubmit} className="space-y-4">
           <Field id="username" label="Username">
             <TextInput
               id="username"
@@ -89,18 +97,24 @@ export function LoginPage() {
             </p>
           ) : null}
 
-          <Button type="submit" variant="primary" className="w-full" disabled={login.isPending}>
+          <Button
+            type="submit"
+            variant="primary"
+            className="mt-2 h-11 w-full text-[14px]"
+            disabled={login.isPending}
+          >
             {login.isPending ? <Spinner className="border-white/40 border-t-white" /> : <IconLock size={15} />}
             {login.isPending ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
 
-        <p className="text-muted mt-6 text-center text-[11.5px] leading-relaxed">
-          Accounts are created by your administrator. Ask them to run
-          <code className="bg-field mx-1 rounded px-1.5 py-0.5">user:add</code>
-          if you need access.
-        </p>
       </div>
+
+      <p className="text-muted relative mt-8 max-w-[42ch] text-center text-[12px] leading-relaxed">
+        Accounts are created by your administrator. Ask them to run
+        <code className="bg-field border-line mx-1 rounded border px-1.5 py-0.5">user:add</code>
+        if you need access.
+      </p>
     </div>
   );
 }

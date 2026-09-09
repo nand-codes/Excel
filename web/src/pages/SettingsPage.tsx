@@ -7,16 +7,16 @@ import {
   IconKeyboard,
   IconAlert,
   IconPrint,
-  IconTrash,
   IconUpload,
 } from '@/components/icons';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 import { ConfirmSheet } from '@/components/ui/ConfirmSheet';
 import { useToast } from '@/components/ui/Toast';
 import { exportClientsCsv, exportJsonBackup, readJsonBackup } from '@/lib/export';
 import { printRegister } from '@/lib/print';
-import { useClearClients, useClients, useImportClients, useSession } from '@/lib/queries';
+import { useClients, useImportClients, useSession } from '@/lib/queries';
 
 interface SettingsRowProps {
   title: ReactNode;
@@ -59,14 +59,11 @@ export function SettingsPage() {
   const { toast } = useToast();
   const session = useSession();
   const { data: clients } = useClients();
-  const clearClients = useClearClients();
   const importClients = useImportClients();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingImport, setPendingImport] = useState<unknown[] | null>(null);
-  const [confirmClear, setConfirmClear] = useState(false);
 
-  const isAdmin = session.data?.role === 'admin';
   const total = clients?.length ?? 0;
 
   function withClients(action: (list: NonNullable<typeof clients>) => void, emptyMessage: string) {
@@ -103,18 +100,10 @@ export function SettingsPage() {
     });
   }
 
-  function runClear() {
-    clearClients.mutate(undefined, {
-      onSuccess: () => {
-        setConfirmClear(false);
-        toast('All client records cleared.', 'info');
-      },
-      onError: () => toast('Could not clear the database.', 'error'),
-    });
-  }
-
   return (
-    <div className="mx-auto max-w-[880px] space-y-4">
+    <div className="mx-auto max-w-[880px] space-y-5">
+      <PageHeader title="Settings" subtitle="Backups, shortcuts and app details" />
+
       <Card>
         <CardHeader title="Data management" icon={<IconDatabase size={17} />} />
         <CardBody className="py-1">
@@ -194,26 +183,6 @@ export function SettingsPage() {
               </Button>
             }
           />
-
-          <SettingsRow
-            title={<span className="text-sys-red">Clear all data</span>}
-            description={
-              isAdmin
-                ? 'Permanently removes every client and payment from the shared database for all users.'
-                : 'Only an admin account can clear the shared database.'
-            }
-            action={
-              <Button
-                size="sm"
-                variant="danger"
-                onClick={() => setConfirmClear(true)}
-                disabled={!isAdmin || !total}
-              >
-                <IconTrash size={14} />
-                Clear data
-              </Button>
-            }
-          />
         </CardBody>
       </Card>
 
@@ -261,9 +230,7 @@ export function SettingsPage() {
           </p>
 
           <div>
-            <span className="text-muted block text-[10.5px] font-semibold tracking-wide uppercase">
-              Fields tracked
-            </span>
+            <span className="text-muted block text-[12px]">Fields tracked</span>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {TRACKED_FIELDS.map((field) => (
                 <span
@@ -278,18 +245,14 @@ export function SettingsPage() {
 
           <div className="border-divider grid gap-3 border-t pt-4 sm:grid-cols-2">
             <div>
-              <span className="text-muted block text-[10.5px] font-semibold tracking-wide uppercase">
-                Signed in as
-              </span>
-              <span className="text-ink mt-0.5 block text-[13px] font-semibold">
+              <span className="text-muted block text-[12px]">Signed in as</span>
+              <span className="text-ink mt-0.5 block text-[13px] font-medium">
                 {session.data ? `${session.data.displayName} (${session.data.role})` : '—'}
               </span>
             </div>
             <div>
-              <span className="text-muted block text-[10.5px] font-semibold tracking-wide uppercase">
-                Clients in database
-              </span>
-              <span className="text-ink mt-0.5 block text-[13px] font-semibold tabular-nums">
+              <span className="text-muted block text-[12px]">Clients in database</span>
+              <span className="text-ink mt-0.5 block text-[13px] font-medium tabular-nums">
                 {total}
               </span>
             </div>
@@ -305,17 +268,6 @@ export function SettingsPage() {
         confirmLabel={importClients.isPending ? 'Importing…' : 'Import'}
         busy={importClients.isPending}
         onConfirm={runImport}
-      />
-
-      <ConfirmSheet
-        open={confirmClear}
-        onOpenChange={setConfirmClear}
-        title="Clear all client data?"
-        description={`This permanently deletes all ${total} client record(s) and their payments for every user. This cannot be undone.`}
-        confirmLabel={clearClients.isPending ? 'Clearing…' : 'Clear everything'}
-        destructive
-        busy={clearClients.isPending}
-        onConfirm={runClear}
       />
     </div>
   );

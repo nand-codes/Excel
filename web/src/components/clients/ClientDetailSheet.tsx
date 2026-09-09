@@ -18,10 +18,8 @@ interface DetailRowProps {
 function DetailRow({ label, value, wide }: DetailRowProps) {
   return (
     <div className={wide ? 'sm:col-span-2' : undefined}>
-      <span className="text-muted block text-[10.5px] font-semibold tracking-wide uppercase">
-        {label}
-      </span>
-      <span className="text-ink mt-0.5 block text-[13.5px] font-semibold break-words">
+      <span className="text-muted block text-[12px]">{label}</span>
+      <span className="text-ink mt-0.5 block text-[13.5px] font-medium break-words">
         {value && String(value).trim() ? value : '—'}
       </span>
     </div>
@@ -118,10 +116,8 @@ export function ClientDetailSheet({
           <div className="border-divider border-t pt-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <span className="text-muted block text-[10.5px] font-semibold tracking-wide uppercase">
-                  Total paid
-                </span>
-                <span className="font-display text-ink text-[22px] font-extrabold">
+                <span className="text-muted block text-[12px]">Total paid</span>
+                <span className="text-ink text-[26px] font-bold tracking-[-0.025em]">
                   {payments.isPending ? '…' : formatMoney(payments.data?.total ?? 0)}
                 </span>
               </div>

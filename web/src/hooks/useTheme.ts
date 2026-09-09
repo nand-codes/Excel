@@ -10,9 +10,10 @@ function readStoredAppearance(): Appearance {
     const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     if (saved === 'dark' || saved === 'light') return saved;
   } catch {
-    /* storage can be blocked; fall through to the system preference */
+    /* storage can be blocked; the default below still applies */
   }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // Dark is the designed appearance, so it wins over the system preference.
+  return 'dark';
 }
 
 /** Keeps the `dark` class on <html> in step with the saved preference. */

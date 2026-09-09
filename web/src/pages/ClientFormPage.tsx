@@ -3,8 +3,9 @@ import type { FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { IconAlert, IconCheck, IconRefresh } from '@/components/icons';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/Button';
-import { Card, CardBody, CardHeader } from '@/components/ui/Card';
+import { Card, CardBody } from '@/components/ui/Card';
 import { Checkbox, Field, TextArea, TextInput } from '@/components/ui/Field';
 import { EmptyState, LoadingPanel } from '@/components/ui/Misc';
 import { Select } from '@/components/ui/Select';
@@ -178,20 +179,18 @@ export function ClientFormPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[880px]">
-      <Card>
-        <CardHeader
-          title={isEdit ? 'Edit Client' : 'Add New Client'}
-          actions={
-            isEdit ? (
-              <span className="text-muted text-[11.5px]">
-                Registered {new Date(existing?.createdAt ?? Date.now()).toLocaleDateString('en-IN')}
-              </span>
-            ) : null
-          }
-        />
+    <div className="mx-auto max-w-[880px] space-y-5">
+      <PageHeader
+        title={isEdit ? 'Edit client' : 'Add client'}
+        subtitle={
+          isEdit
+            ? `Registered ${new Date(existing?.createdAt ?? Date.now()).toLocaleDateString('en-IN')}`
+            : 'Enter the learner’s details to add them to the register'
+        }
+      />
 
-        <CardBody>
+      <Card>
+        <CardBody className="pt-5">
           {conflict?.kind === 'stale' ? (
             <div className="border-sys-red/40 bg-sys-red/8 rounded-card mb-5 border p-4">
               <div className="text-sys-red flex items-center gap-2 text-[13.5px] font-bold">

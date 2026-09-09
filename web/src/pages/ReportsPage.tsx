@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { IconDownload, IconPrint } from '@/components/icons';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { BarList, MonthlyBars } from '@/components/reports/Charts';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
@@ -62,26 +63,43 @@ export function ReportsPage() {
     };
   }, [clients]);
 
-  if (isPending) return <LoadingPanel label="Building reports…" />;
+  const header = <PageHeader title="Reports" subtitle="How the register breaks down" />;
+
+  if (isPending) {
+    return (
+      <div className="space-y-5">
+        {header}
+        <LoadingPanel label="Building reports…" />
+      </div>
+    );
+  }
 
   if (isError) {
     return (
-      <Card>
-        <EmptyState title="Could not load reports" hint="The client list failed to load." />
-      </Card>
+      <div className="space-y-5">
+        {header}
+        <Card>
+          <EmptyState title="Could not load reports" hint="The client list failed to load." />
+        </Card>
+      </div>
     );
   }
 
   if (!clients?.length) {
     return (
-      <Card>
-        <EmptyState title="No data yet." hint="Reports appear once you have added some clients." />
-      </Card>
+      <div className="space-y-5">
+        {header}
+        <Card>
+          <EmptyState title="No data yet." hint="Reports appear once you have added some clients." />
+        </Card>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {header}
+
       <div className="grid gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader title="Clients by licence type" />

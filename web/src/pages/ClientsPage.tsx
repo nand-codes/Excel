@@ -5,8 +5,9 @@ import { useClientActions } from '@/components/clients/ClientActions';
 import { ClientsTable, sortClients } from '@/components/clients/ClientsTable';
 import type { SortColumn, SortState } from '@/components/clients/ClientsTable';
 import { IconDownload, IconPlus, IconRefresh } from '@/components/icons';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { Button, buttonClass } from '@/components/ui/Button';
-import { Card, CardHeader } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { EmptyState, LoadingPanel } from '@/components/ui/Misc';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/components/ui/Toast';
@@ -89,7 +90,34 @@ export function ClientsPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      <PageHeader
+        title="Clients"
+        subtitle={
+          clients?.length
+            ? `${clients.length} registered${
+                visible.length !== clients.length ? ` · ${visible.length} shown` : ''
+              }`
+            : undefined
+        }
+        actions={
+          <>
+            <Button size="sm" onClick={() => void refetch()} disabled={isFetching}>
+              <IconRefresh size={14} />
+              {isFetching ? 'Refreshing…' : 'Refresh'}
+            </Button>
+            <Button size="sm" onClick={onExport}>
+              <IconDownload size={14} />
+              Export CSV
+            </Button>
+            <Link to="/clients/new" className={buttonClass('primary', 'sm')}>
+              <IconPlus size={14} />
+              Add client
+            </Link>
+          </>
+        }
+      />
+
       <div className="flex flex-wrap items-center gap-2">
         <Select
           value={licenceFilter}
@@ -109,26 +137,9 @@ export function ClientsPage() {
           fullWidth={false}
           className="min-w-[150px]"
         />
-
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Button size="sm" onClick={() => void refetch()} disabled={isFetching}>
-            <IconRefresh size={14} />
-            {isFetching ? 'Refreshing…' : 'Refresh'}
-          </Button>
-          <Button size="sm" onClick={onExport}>
-            <IconDownload size={14} />
-            Export CSV
-          </Button>
-          <Link to="/clients/new" className={buttonClass('primary', 'sm')}>
-            <IconPlus size={14} />
-            Add client
-          </Link>
-        </div>
       </div>
 
       <Card className="overflow-hidden">
-        <CardHeader title="Clients" badge={visible.length} />
-
         {isPending ? (
           <LoadingPanel label="Loading clients…" />
         ) : isError ? (

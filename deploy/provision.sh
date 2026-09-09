@@ -154,9 +154,8 @@ Done. Remaining manual steps:
   1. Lightsail → Networking: allow HTTPS 443 and HTTP 80 from anywhere, and
      restrict SSH 22 to your own IP address.
   ${ADDRESS_STEP}
-  3. Create the staff accounts:
-       sudo -u excelds EXCEL_DB_PATH=${DATA_DIR}/clients.sqlite \\
-         node ${APP_DIR}/scripts/user-cli.js add --username admin --role admin
+  3. Create the staff accounts, one line, one account per person:
+       sudo -u excelds env EXCEL_DB_PATH=${DATA_DIR}/clients.sqlite node ${APP_DIR}/scripts/user-cli.js add --username admin --role admin
   4. Configure the S3 bucket name in /etc/excel-ds.env (EXCEL_S3_TARGET) and put
      the instance's IAM credentials in place, then test:  sudo excel-ds-backup
 

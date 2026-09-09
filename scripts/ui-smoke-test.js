@@ -192,10 +192,10 @@ async function main() {
     });
     page.on('pageerror', (error) => consoleErrors.push(String(error)));
 
-    // Pin the light appearance so the captures are predictable regardless of the host.
+    // Pin the designed dark appearance so the captures are predictable regardless of the host.
     await page.evaluateOnNewDocument(() => {
       try {
-        localStorage.setItem('excelDS_theme', 'light');
+        localStorage.setItem('excelDS_theme', 'dark');
       } catch {
         /* ignore */
       }
@@ -337,24 +337,20 @@ async function main() {
     );
     check('settings page renders', true);
 
-    // The starting appearance follows the system preference, so flip whichever is active.
-    const startedDark = await page.evaluate(() =>
-      document.documentElement.classList.contains('dark')
-    );
+    const isDark = () => page.evaluate(() => document.documentElement.classList.contains('dark'));
+
+    check('the app opens in the dark appearance', await isDark());
+    await shoot(page, 'settings-dark');
+
+    // Toggling proves the light appearance still holds up, and captures it.
     await page.click('button[aria-label^="Switch to"]');
     await new Promise((resolve) => setTimeout(resolve, 400));
-    const nowDark = await page.evaluate(() => document.documentElement.classList.contains('dark'));
-    check('the appearance toggle switches themes', nowDark !== startedDark);
+    check('the appearance toggle switches themes', !(await isDark()));
+    await shoot(page, 'settings-light');
 
-    if (!nowDark) {
-      await page.click('button[aria-label^="Switch to"]');
-      await new Promise((resolve) => setTimeout(resolve, 400));
-    }
-    check(
-      'the dark appearance applies',
-      await page.evaluate(() => document.documentElement.classList.contains('dark'))
-    );
-    await shoot(page, 'settings-dark');
+    await page.click('button[aria-label^="Switch to"]');
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    check('the dark appearance applies', await isDark());
 
     await page.click('nav a[href="/"]');
     await page.waitForSelector('table tbody tr');

@@ -12,7 +12,7 @@ import { cn } from '@/lib/cn';
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: IconGrid, end: true },
   { to: '/clients', label: 'Clients', icon: IconUsers, end: false },
-  { to: '/clients/new', label: 'Add Client', icon: IconPlusCircle, end: true },
+  { to: '/clients/new', label: 'Add client', icon: IconPlusCircle, end: true },
   { to: '/reports', label: 'Reports', icon: IconChart, end: true },
   { to: '/settings', label: 'Settings', icon: IconSettings, end: true },
 ];
@@ -27,20 +27,19 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'bg-sidebar border-line fixed inset-y-0 left-0 z-30 flex w-[232px] flex-col border-r backdrop-blur-2xl',
+        'bg-sidebar border-line fixed inset-y-0 left-0 z-30 flex w-[240px] flex-col border-r backdrop-blur-[20px] backdrop-saturate-150',
         'transition-transform duration-250 ease-[var(--ease-mac)]',
         open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       )}
     >
-      <div className="flex items-center gap-3 px-4 py-4">
-        <img src="/icon.png" alt="" width={40} height={40} className="rounded-ctl shrink-0" />
+      <div className="flex items-center gap-2.5 px-5 pt-5 pb-4">
+        <img src="/icon.png" alt="" width={30} height={30} className="shrink-0 rounded-[7px]" />
         <div className="min-w-0 leading-tight">
-          <div className="font-display text-ink truncate text-[15px] font-extrabold">Excel</div>
-          <div className="text-muted truncate text-[11.5px] font-medium">Driving School</div>
+          <div className="text-ink truncate text-[13.5px] font-semibold">Excel Driving School</div>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-0.5 px-2.5 py-2">
+      <nav className="flex-1 space-y-px px-2.5">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -49,20 +48,22 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
-                'rounded-ctl flex items-center gap-2.5 px-2.5 py-2 text-[13.5px] font-semibold transition-colors duration-150',
-                isActive ? 'bg-accent text-white shadow-mac' : 'text-ink-soft hover:bg-hover hover:text-ink'
+                'rounded-ctl flex items-center gap-2.5 px-2.5 py-[7px] text-[13px] transition-colors duration-150',
+                // A tinted row with accent text, the way Finder and Mail mark selection —
+                // not a saturated blue slab with a shadow.
+                isActive
+                  ? 'bg-accent-light text-accent font-semibold'
+                  : 'text-ink-soft hover:bg-hover hover:text-ink font-medium'
               )
             }
           >
-            <Icon size={18} />
+            <Icon size={17} />
             {label}
           </NavLink>
         ))}
       </nav>
 
-      <div className="border-divider text-muted border-t px-4 py-3 text-[11px] font-medium">
-        v1.0 · Excel DS
-      </div>
+      <div className="text-muted px-5 py-4 text-[11px]">Version 1.0</div>
     </aside>
   );
 }

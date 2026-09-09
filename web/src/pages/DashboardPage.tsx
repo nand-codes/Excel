@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { useClientActions } from '@/components/clients/ClientActions';
 import { IconCalendar, IconCard, IconEye, IconPlus, IconUsers } from '@/components/icons';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { IconButton, buttonClass } from '@/components/ui/Button';
 import { Card, CardHeader } from '@/components/ui/Card';
 import { Avatar, EmptyState, LoadingPanel, Pill } from '@/components/ui/Misc';
@@ -13,28 +14,18 @@ interface StatCardProps {
   label: string;
   value: string | number;
   icon: React.ReactNode;
-  tone: 'blue' | 'teal' | 'green';
 }
 
-const TONES = {
-  blue: 'text-white bg-gradient-to-br from-[var(--app-accent)] to-[var(--app-accent-hover)]',
-  teal: 'text-white bg-gradient-to-br from-[var(--app-hero-mid)] to-[var(--app-teal)]',
-  green: 'text-white bg-gradient-to-br from-[var(--app-green)] to-[var(--app-teal)]',
-};
-
-function StatCard({ label, value, icon, tone }: StatCardProps) {
+/** The number is the content; the icon is a quiet label, not a coloured badge. */
+function StatCard({ label, value, icon }: StatCardProps) {
   return (
-    <Card className="flex items-center gap-3.5 p-4">
-      <span className={`rounded-card flex h-11 w-11 shrink-0 items-center justify-center ${TONES[tone]}`}>
-        {icon}
+    <Card interactive className="px-6 py-5">
+      <span className="text-muted flex items-center gap-1.5 text-[13px]">
+        <span className="shrink-0">{icon}</span>
+        {label}
       </span>
-      <span className="min-w-0">
-        <span className="text-muted block text-[11.5px] font-semibold tracking-wide uppercase">
-          {label}
-        </span>
-        <span className="font-display text-ink block text-[26px] leading-tight font-extrabold">
-          {value}
-        </span>
+      <span className="text-ink mt-3 block text-[44px] leading-none font-bold tracking-[-0.03em] tabular-nums">
+        {value}
       </span>
     </Card>
   );
@@ -64,56 +55,29 @@ export function DashboardPage() {
   }, [clients]);
 
   return (
-    <div className="space-y-5">
-      <section
-        className="rounded-hero relative overflow-hidden px-6 py-7 text-white sm:px-8 sm:py-9"
-        style={{
-          background:
-            'linear-gradient(135deg, var(--app-hero-start), var(--app-hero-mid), var(--app-hero-end))',
-        }}
-      >
-        <div className="relative flex flex-wrap items-center justify-between gap-6">
-          <div className="min-w-0">
-            <p className="text-[12.5px] font-semibold text-white/80">Welcome back</p>
-            <h2 className="font-display mt-1 text-[26px] leading-tight font-extrabold sm:text-[30px]">
-              Excel Driving School
-            </h2>
-            <p className="mt-1 text-[13.5px] text-white/85">Client Management System</p>
-            <Link
-              to="/clients/new"
-              className={buttonClass(
-                'secondary',
-                'sm',
-                'mt-4 border-white/30 bg-white/15 text-white backdrop-blur hover:bg-white/25'
-              )}
-            >
-              <IconPlus size={14} />
-              Add a client
-            </Link>
-          </div>
-          <img
-            src="/icon.png"
-            alt=""
-            width={104}
-            height={104}
-            className="rounded-hero hidden shrink-0 bg-white/15 p-2 backdrop-blur sm:block"
-          />
-        </div>
-      </section>
+    <div className="space-y-6">
+      <PageHeader
+        title="Dashboard"
+        subtitle="Your register at a glance"
+        actions={
+          <Link to="/clients/new" className={buttonClass('primary', 'md')}>
+            <IconPlus size={14} />
+            Add client
+          </Link>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard label="Total clients" value={stats.total} icon={<IconUsers size={20} />} tone="blue" />
+        <StatCard label="Total clients" value={stats.total} icon={<IconUsers size={14} />} />
         <StatCard
           label="Added this month"
           value={stats.thisMonth}
-          icon={<IconCalendar size={20} />}
-          tone="teal"
+          icon={<IconCalendar size={14} />}
         />
         <StatCard
           label="Licence types"
           value={stats.licenceTypes || '—'}
-          icon={<IconCard size={20} />}
-          tone="green"
+          icon={<IconCard size={14} />}
         />
       </div>
 

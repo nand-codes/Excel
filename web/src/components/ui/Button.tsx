@@ -11,26 +11,26 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: ReactNode;
 }
 
+// Apple's buttons are flat, fully rounded and change only in brightness on press —
+// no lift, no travel, no border on the filled ones.
 const VARIANTS: Record<Variant, string> = {
-  primary:
-    'bg-accent text-white shadow-mac hover:bg-accent-hover active:scale-[0.98] disabled:hover:bg-accent',
-  secondary:
-    'bg-elevated text-ink border border-line shadow-mac hover:bg-hover active:scale-[0.98]',
+  primary: 'bg-accent text-white hover:bg-accent-hover active:brightness-95 disabled:hover:bg-accent',
+  secondary: 'bg-elevated text-ink border border-line hover:bg-hover active:brightness-97',
   ghost: 'text-ink-soft hover:bg-hover hover:text-ink',
-  danger: 'bg-sys-red text-white shadow-mac hover:brightness-110 active:scale-[0.98]',
+  danger: 'bg-sys-red text-white hover:brightness-110 active:brightness-95',
 };
 
 const SIZES: Record<Size, string> = {
-  sm: 'h-8 px-3 text-[12.5px] gap-1.5',
-  md: 'h-10 px-4 text-[13.5px] gap-2',
+  sm: 'h-[30px] px-3 text-[12.5px] gap-1.5',
+  md: 'h-9 px-4 text-[13px] gap-1.5',
 };
 
 /** Shared styling so router links can look exactly like buttons. */
 export function buttonClass(variant: Variant = 'secondary', size: Size = 'md', extra?: string) {
   return cn(
-    'rounded-ctl inline-flex shrink-0 items-center justify-center font-semibold whitespace-nowrap',
-    'transition-[background-color,transform,filter,opacity] duration-150 ease-[var(--ease-mac)]',
-    'disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100',
+    'inline-flex shrink-0 items-center justify-center rounded-full font-medium whitespace-nowrap',
+    'transition-[background-color,filter,opacity] duration-150 ease-[var(--ease-mac)]',
+    'disabled:cursor-not-allowed disabled:opacity-40',
     VARIANTS[variant],
     SIZES[size],
     extra
@@ -65,7 +65,7 @@ export function IconButton({ label, tone = 'neutral', className, ...props }: Ico
       title={label}
       aria-label={label}
       className={cn(
-        'rounded-ctl inline-flex h-8 w-8 items-center justify-center transition-colors duration-150',
+        'inline-flex h-[30px] w-[30px] items-center justify-center rounded-full transition-colors duration-150',
         'disabled:cursor-not-allowed disabled:opacity-40',
         TONES[tone],
         className

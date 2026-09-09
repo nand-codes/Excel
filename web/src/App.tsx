@@ -71,7 +71,7 @@ function AppShell({ user }: { user: User }) {
         />
       ) : null}
 
-      <div className="lg:pl-[232px]">
+      <div className="lg:pl-[240px]">
         <Topbar
           title={pageTitle(location.pathname)}
           showSearch={location.pathname === '/clients'}
@@ -82,7 +82,7 @@ function AppShell({ user }: { user: User }) {
           onSignOut={() => logout.mutate()}
         />
 
-        <main className="mx-auto w-full max-w-[1440px] px-4 py-5 lg:px-6 lg:py-6">
+        <main className="mx-auto w-full max-w-[1280px] px-4 py-6 lg:px-8 lg:py-8">
           <ClientActionsProvider>
             <Routes>
               <Route path="/" element={<DashboardPage />} />
