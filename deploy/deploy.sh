@@ -16,7 +16,7 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-PREVIOUS=$(git -C "$APP_DIR" rev-parse --short HEAD)
+PREVIOUS=$(sudo -H -u excelds git -C "$APP_DIR" rev-parse --short HEAD)
 echo "==> Currently deployed: $PREVIOUS"
 
 echo "==> Taking a database snapshot first"
@@ -37,7 +37,7 @@ systemctl restart excel-ds
 sleep 2
 
 if curl -fsS --max-time 10 "$HEALTH_URL" >/dev/null; then
-  echo "==> Healthy at $(git -C "$APP_DIR" rev-parse --short HEAD)"
+  echo "==> Healthy at $(sudo -H -u excelds git -C "$APP_DIR" rev-parse --short HEAD)"
 else
   echo "!! Health check failed — rolling back to $PREVIOUS" >&2
   sudo -H -u excelds git -C "$APP_DIR" reset --hard "$PREVIOUS"
