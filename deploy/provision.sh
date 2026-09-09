@@ -4,17 +4,26 @@
 # Installs Node 22 and Caddy, creates the service account and directories, and installs
 # the systemd unit. Safe to re-run: every step checks before acting.
 #
-# Usage, on the instance:
+# Usage, on the instance — a domain, or the static IP if you do not have one:
 #   sudo bash provision.sh app.example.com admin@example.com
+#   sudo bash provision.sh 203.0.113.10   admin@example.com
 #
 set -euo pipefail
 
-DOMAIN="${1:-}"
+ADDRESS="${1:-}"
 EMAIL="${2:-}"
 
-if [[ -z "$DOMAIN" || -z "$EMAIL" ]]; then
-  echo "Usage: sudo bash provision.sh <domain> <email-for-lets-encrypt>" >&2
+if [[ -z "$ADDRESS" || -z "$EMAIL" ]]; then
+  echo "Usage: sudo bash provision.sh <domain-or-static-ip> <email-for-lets-encrypt>" >&2
   exit 1
+fi
+
+# Let's Encrypt will certify an IP address, but only under its six-day profile, so the
+# two cases need different Caddy configuration.
+if [[ "$ADDRESS" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]]; then
+  ADDRESS_KIND=ip
+else
+  ADDRESS_KIND=domain
 fi
 
 if [[ $EUID -ne 0 ]]; then
@@ -22,7 +31,7 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-REPO_URL="${REPO_URL:-https://github.com/nandana-suresh-c/Excel.git}"
+REPO_URL="${REPO_URL:-https://github.com/nand-codes/Excel.git}"
 APP_DIR=/opt/excel-ds
 DATA_DIR=/var/lib/excel-ds
 BACKUP_DIR=/var/backups/excel-ds
@@ -49,6 +58,10 @@ if ! command -v caddy >/dev/null; then
     >/etc/apt/sources.list.d/caddy-stable.list
   apt-get update -qq
   apt-get install -y -qq caddy
+fi
+caddy version
+if [[ "$ADDRESS_KIND" == ip ]]; then
+  echo "    IP certificates need Caddy 2.11 or newer; if issuance fails, run: sudo caddy upgrade"
 fi
 
 echo "==> Installing the AWS CLI (for the nightly S3 backup)"
@@ -87,9 +100,16 @@ install -m 644 "$APP_DIR/deploy/excel-ds.service" /etc/systemd/system/excel-ds.s
 systemctl daemon-reload
 systemctl enable excel-ds
 
-echo "==> Writing the Caddy configuration for $DOMAIN"
-sed -e "s/app\.example\.com/${DOMAIN}/g" -e "s/admin@example\.com/${EMAIL}/g" \
-  "$APP_DIR/deploy/Caddyfile" >/etc/caddy/Caddyfile
+echo "==> Writing the Caddy configuration for $ADDRESS"
+if [[ "$ADDRESS_KIND" == ip ]]; then
+  TEMPLATE="$APP_DIR/deploy/Caddyfile.ip"
+else
+  TEMPLATE="$APP_DIR/deploy/Caddyfile"
+fi
+sed -e "s/app\.example\.com/${ADDRESS}/g" \
+  -e "s/203\.0\.113\.10/${ADDRESS}/g" \
+  -e "s/admin@example\.com/${EMAIL}/g" \
+  "$TEMPLATE" >/etc/caddy/Caddyfile
 caddy validate --config /etc/caddy/Caddyfile
 
 echo "==> Building and starting"
@@ -107,14 +127,22 @@ echo
 echo "Local health check:"
 curl -fsS http://127.0.0.1:4000/api/health && echo
 
+if [[ "$ADDRESS_KIND" == ip ]]; then
+  ADDRESS_STEP="2. Nothing to do for DNS. Caddy is asking Let's Encrypt for a six-day
+     certificate for ${ADDRESS} and renews it automatically, so leave 80 and 443
+     open permanently. Watch the first issuance:  journalctl -u caddy -f"
+else
+  ADDRESS_STEP="2. Point an A record for ${ADDRESS} at this instance's static IP, then wait
+     for DNS to resolve before loading the site (Caddy needs it for the certificate)."
+fi
+
 cat <<EOF
 
 Done. Remaining manual steps:
 
   1. Lightsail → Networking: allow HTTPS 443 and HTTP 80 from anywhere, and
      restrict SSH 22 to your own IP address.
-  2. Point an A record for ${DOMAIN} at this instance's static IP, then wait for
-     DNS to resolve before loading the site (Caddy needs it for the certificate).
+  ${ADDRESS_STEP}
   3. Create the staff accounts:
        sudo -u excelds EXCEL_DB_PATH=${DATA_DIR}/clients.sqlite \\
          node ${APP_DIR}/scripts/user-cli.js add --username admin --role admin

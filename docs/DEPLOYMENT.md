@@ -44,6 +44,34 @@ npm run test:ui     # browser walkthrough of every screen
 If you already own a domain elsewhere, skip this and just point an `A` record at the static
 IP from step 3.
 
+### No domain? Serve from the IP instead
+
+Since January 2026 Let's Encrypt issues certificates for IP addresses, so you can run real
+HTTPS without buying anything — `deploy/Caddyfile.ip` is that configuration and
+`provision.sh` picks it automatically when you pass an IP instead of a hostname. Skip steps 2
+and 4 entirely; everything else is unchanged.
+
+Two things make this worse than a domain rather than merely different, and both are worth
+knowing before you commit to it:
+
+- **IP certificates last 160 hours, about six days**, because Let's Encrypt requires its
+  `shortlived` profile for them. Caddy renews well before expiry on its own, but the margin
+  for error is days rather than a month: if ports 80 and 443 become unreachable, or the
+  instance is stopped over a long weekend, HTTPS breaks rather than merely ages.
+- **The address is the certificate.** Change or detach the static IP and every bookmark and
+  the certificate go with it. With a domain you can rebuild the instance and repoint DNS.
+
+A free hostname is the middle road if you would rather not pay: a DuckDNS subdomain gives you
+ordinary 90-day certificates and survives an IP change, and `provision.sh` treats it as a
+normal domain. Avoid `nip.io` and `sslip.io` — they are shared so heavily that Let's Encrypt
+rate limits usually reject them.
+
+One Lightsail-specific detail the config already handles: the instance's own network
+interface holds a private NAT address, not your public IP, and browsers send no SNI when you
+type a bare IP. Caddy would therefore look for a certificate named after the private address
+and fail the handshake, which is why `Caddyfile.ip` sets `default_sni` to your public IP.
+This also needs Caddy 2.11 or newer; the provisioning script prints the version it installed.
+
 ## 3. Create the instance
 
 Lightsail → **Create instance**:
@@ -67,6 +95,8 @@ Then, still in Lightsail:
 
 ## 4. Point DNS at it
 
+Skip this step if you are using the IP directly.
+
 Route 53 → your hosted zone → **Create record**:
 
 - Name: `app` (so the app lives at `app.yourdomain.in`), or blank for the root domain
@@ -85,18 +115,23 @@ SSH in, then:
 
 ```bash
 sudo apt-get update && sudo apt-get install -y git
-git clone https://github.com/nandana-suresh-c/Excel.git /tmp/excel
-sudo bash /tmp/excel/deploy/provision.sh app.yourdomain.in you@yourdomain.in
+git clone https://github.com/nand-codes/Excel.git /tmp/excel
+
+# With a domain:
+sudo bash /tmp/excel/deploy/provision.sh app.yourdomain.in you@example.com
+# Or straight from the static IP:
+sudo bash /tmp/excel/deploy/provision.sh 203.0.113.10 you@example.com
 ```
 
 `deploy/provision.sh` is idempotent — re-running it is safe. It installs Node 22, Caddy and
 the AWS CLI, creates the `excelds` user and the data directories, clones the app to
-`/opt/excel-ds`, writes `/etc/excel-ds.env`, installs the systemd unit and the Caddyfile with
-your domain substituted in, builds the front end, starts everything, and installs the nightly
-backup job.
+`/opt/excel-ds`, writes `/etc/excel-ds.env`, installs the systemd unit and the matching
+Caddyfile with your address substituted in, builds the front end, starts everything, and
+installs the nightly backup job.
 
-When it finishes, `https://app.yourdomain.in` should show the login screen. There are no
-accounts yet, so nothing can get in — that is the correct state to be in for one more step.
+When it finishes, `https://app.yourdomain.in` (or `https://203.0.113.10`) should show the
+login screen. There are no accounts yet, so nothing can get in — that is the correct state to
+be in for one more step.
 
 ## 6. Create the three staff accounts
 
@@ -257,6 +292,8 @@ Budget about 15 minutes. This is the accepted downside of running a single insta
 | Symptom | Cause and fix |
 | --- | --- |
 | Browser shows a certificate error | DNS was not resolving when Caddy first started. Fix the `A` record, then `sudo systemctl restart caddy` and check `journalctl -u caddy -n 50`. |
+| On the IP setup: `no certificate available for 172.26.x.x` | Caddy is matching the private NAT address. `/etc/caddy/Caddyfile` needs `default_sni <your public IP>` in the global block — check the substitution worked. |
+| On the IP setup: `cannot have public IP certificate` | Caddy is too old to request IP certificates. `caddy version`, then `sudo caddy upgrade && sudo systemctl restart caddy`. |
 | 502 from Caddy | The API is down. `journalctl -u excel-ds -n 100` — usually a syntax error in a bad deploy or a missing `/etc/excel-ds.env`. |
 | Login always fails | Wrong database. Confirm `EXCEL_DB_PATH` in `/etc/excel-ds.env` matches the file you created the accounts in, then `node scripts/user-cli.js list`. |
 | "Too many sign-in attempts" | The rate limiter, 10 per IP per 15 minutes. All three staff behind one office IP share that budget. Wait, or raise `EXCEL_LOGIN_ATTEMPTS`. |
