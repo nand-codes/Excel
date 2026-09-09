@@ -81,6 +81,12 @@ mkdir -p "$APP_DIR" "$DATA_DIR" "$BACKUP_DIR" /var/log/caddy
 chown -R excelds:excelds "$DATA_DIR" "$BACKUP_DIR"
 chmod 750 "$DATA_DIR" "$BACKUP_DIR"
 
+# Caddy runs as its own user and refuses to start if it cannot open its log file.
+if id caddy >/dev/null 2>&1; then
+  chown caddy:caddy /var/log/caddy
+  chmod 750 /var/log/caddy
+fi
+
 echo "==> Fetching the application"
 if [[ -d "$APP_DIR/.git" ]]; then
   git -C "$APP_DIR" pull --ff-only
@@ -110,7 +116,12 @@ sed -e "s/app\.example\.com/${ADDRESS}/g" \
   -e "s/203\.0\.113\.10/${ADDRESS}/g" \
   -e "s/admin@example\.com/${EMAIL}/g" \
   "$TEMPLATE" >/etc/caddy/Caddyfile
+caddy fmt --overwrite /etc/caddy/Caddyfile
 caddy validate --config /etc/caddy/Caddyfile
+
+# Validating provisions the logging module, which creates the log file as root; the
+# service then runs as caddy and cannot open it. Hand the whole directory back.
+chown -R caddy:caddy /var/log/caddy
 
 echo "==> Building and starting"
 sudo -H -u excelds bash -c "cd '$APP_DIR' && npm ci --omit=dev"
