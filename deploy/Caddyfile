@@ -1,0 +1,45 @@
+# /etc/caddy/Caddyfile
+# Replace app.example.com with your domain and admin@example.com with your email.
+# Caddy obtains and renews the Let's Encrypt certificate on its own.
+
+{
+	email admin@example.com
+}
+
+app.example.com {
+	encode zstd gzip
+
+	# The API. Everything under /api needs a session cookie, enforced by Node.
+	handle /api/* {
+		reverse_proxy 127.0.0.1:4000 {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# The React build. Unknown paths fall back to index.html so deep links work.
+	handle {
+		root * /opt/excel-ds/web/dist
+		try_files {path} /index.html
+		file_server
+	}
+
+	# Vite writes content-hashed asset names, so they can be cached indefinitely.
+	header /assets/* Cache-Control "public, max-age=31536000, immutable"
+	header /index.html Cache-Control "no-cache"
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "same-origin"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+		-Server
+	}
+
+	log {
+		output file /var/log/caddy/excel-ds.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}

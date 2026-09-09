@@ -1,0 +1,17 @@
+# Nightly database backup for Excel Driving School.
+# Installed as /etc/cron.d/excel-ds-backup (root-owned, mode 644, no execute bit).
+#
+# Times are in the instance timezone. Set it once with:
+#   sudo timedatectl set-timezone Asia/Kolkata
+# so 02:17 means 02:17 in Mumbai rather than 07:47 local.
+#
+# Output is appended to a log rather than mailed; failures are visible there and in
+# `systemctl status cron`.
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+17 2 * * * root /usr/local/bin/excel-ds-backup >>/var/log/excel-ds-backup.log 2>&1
+
+# Weekly cleanup so the log cannot grow without bound.
+5 3 * * 0 root find /var/log/excel-ds-backup.log -size +5M -delete

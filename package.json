@@ -1,12 +1,26 @@
 {
   "name": "excel-driving-school",
   "version": "1.0.0",
-  "description": "Excel Driving School — Client Management System",
-  "main": "main.js",
+  "description": "Excel Driving School — Client Management System (web app + API)",
+  "main": "server/index.js",
   "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder --win portable",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "node server/index.js",
+    "server:dev": "node --watch server/index.js",
+    "web:install": "npm --prefix web install",
+    "web:dev": "npm --prefix web run dev",
+    "web:build": "npm --prefix web run build",
+    "build": "npm run web:build",
+    "start": "node server/index.js",
+    "user:add": "node scripts/user-cli.js add",
+    "user:list": "node scripts/user-cli.js list",
+    "user:passwd": "node scripts/user-cli.js passwd",
+    "user:remove": "node scripts/user-cli.js remove",
+    "backup:now": "node scripts/backup-snapshot.js",
+    "test": "node scripts/api-smoke-test.js && node scripts/concurrency-test.js",
+    "test:api": "node scripts/api-smoke-test.js",
+    "test:concurrency": "node scripts/concurrency-test.js",
+    "test:ui": "node scripts/ui-smoke-test.js",
+    "perf": "node scripts/perf-benchmark.js"
   },
   "repository": {
     "type": "git",
@@ -16,39 +30,24 @@
   "author": "Excel Driving School",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "bugs": {
     "url": "https://github.com/nandana-suresh-c/Excel/issues"
   },
   "homepage": "https://github.com/nandana-suresh-c/Excel#readme",
-  "build": {
-    "appId": "com.exceldrivingschool.clientmanager",
-    "productName": "Excel Driving School",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "package.json",
-      "main.js",
-      "preload.js",
-      "index.html",
-      "style.css",
-      "app.js",
-      "services/**/*",
-      "db/**/*",
-      "icon.png"
-    ],
-    "win": {
-      "target": "portable",
-      "icon": "icon.png",
-      "signAndEditExecutable": false
-    },
-    "portable": {
-      "artifactName": "ExcelDrivingSchool.exe"
-    }
-  },
   "devDependencies": {
-    "electron": "^42.3.2",
-    "electron-builder": "^25.1.8",
-    "electron-packager": "^17.1.2"
+    "puppeteer-core": "^25.10.0"
+  },
+  "overrides": {
+    "ip-address": "^10.7.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0"
   }
 }

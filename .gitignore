@@ -37,6 +37,9 @@ Thumbs.db
 /data/*.sqlite-wal
 /data/*.sqlite-shm
 
+# Snapshots from `npm run backup:now`
+/data/backups/
+
 *.suo
 *.ntvs*
 *.njsproj

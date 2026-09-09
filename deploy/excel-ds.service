@@ -1,0 +1,43 @@
+[Unit]
+Description=Excel Driving School API
+Documentation=https://github.com/nandana-suresh-c/Excel
+After=network-online.target
+Wants=network-online.target
+
+# Give up if it is crash-looping; the restart itself is configured below.
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+[Service]
+Type=simple
+User=excelds
+Group=excelds
+WorkingDirectory=/opt/excel-ds
+EnvironmentFile=/etc/excel-ds.env
+ExecStart=/usr/bin/node server/index.js
+
+# Restart on crash and after a reboot.
+Restart=always
+RestartSec=3
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=excel-ds
+
+# The process only ever needs to write the database directory.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/var/lib/excel-ds
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+
+[Install]
+WantedBy=multi-user.target
