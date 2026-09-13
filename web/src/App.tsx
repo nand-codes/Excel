@@ -84,15 +84,17 @@ function AppShell({ user }: { user: User }) {
 
         <main className="mx-auto w-full max-w-[1280px] px-4 py-6 lg:px-8 lg:py-8">
           <ClientActionsProvider>
-            <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/clients" element={<ClientsPage />} />
-              <Route path="/clients/new" element={<ClientFormPage />} />
-              <Route path="/clients/:id/edit" element={<ClientFormPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            <div key={location.pathname} className="page-transition">
+              <Routes>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/clients" element={<ClientsPage />} />
+                <Route path="/clients/new" element={<ClientFormPage />} />
+                <Route path="/clients/:id/edit" element={<ClientFormPage />} />
+                <Route path="/reports" element={<ReportsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </div>
           </ClientActionsProvider>
         </main>
       </div>

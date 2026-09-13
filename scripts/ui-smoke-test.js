@@ -158,6 +158,13 @@ async function setValue(page, selector, value) {
 }
 
 async function shoot(page, name) {
+  await page.evaluate(async () => {
+    await Promise.all(
+      document.getAnimations()
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => {}))
+    );
+  });
   fs.mkdirSync(SHOT_DIR, { recursive: true });
   const file = path.join(SHOT_DIR, `${name}.png`);
   await page.screenshot({ path: file, fullPage: false });
@@ -355,6 +362,47 @@ async function main() {
     await page.click('nav a[href="/"]');
     await page.waitForSelector('table tbody tr');
     await shoot(page, 'dashboard-dark');
+
+    console.log('\nResponsive layout and motion');
+    check('page sections have entrance motion', await page.$eval('.page-transition > * > *',
+      (element) => getComputedStyle(element).animationName === 'pageReveal'));
+    await page.click('button[aria-label^="Switch to"]');
+    await shoot(page, 'dashboard-light');
+
+    await page.setViewport({ width: 390, height: 844 });
+    await shoot(page, 'dashboard-mobile');
+    check('mobile dashboard fits the viewport', await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth));
+    await page.click('button[aria-label="Toggle sidebar"]');
+    await page.waitForFunction(() => document.querySelector('aside')?.getBoundingClientRect().left === 0);
+    await shoot(page, 'navigation-mobile');
+    await page.click('nav a[href="/clients"]');
+    await page.waitForSelector('input[aria-label="Search clients"]');
+    await page.waitForFunction(() => document.querySelector('aside')?.getBoundingClientRect().right <= 0);
+    check('mobile navigation closes after selecting a page', true);
+    await page.type('input[aria-label="Search clients"]', 'Aparna');
+    await page.waitForSelector('table tbody tr');
+    check('mobile search remains usable', (await textOf(page, 'table tbody')).includes('Aparna'));
+    await page.setViewport({ width: 320, height: 740 });
+    await shoot(page, 'clients-mobile');
+    check('small mobile toolbar fits without overlap', await page.evaluate(() => {
+      const header = document.querySelector('header');
+      const children = Array.from(header.children).map((element) => element.getBoundingClientRect());
+      return document.documentElement.scrollWidth <= window.innerWidth
+        && children.every((rect, index) => rect.right <= window.innerWidth
+          && (index === 0 || rect.left >= children[index - 1].right));
+    }));
+
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+    check('reduced motion removes entrance delays and smooth scrolling', await page.$eval(
+      '.page-transition > * > :nth-child(2)', (element) => {
+        const style = getComputedStyle(element);
+        return parseFloat(style.animationDuration) <= 0.00001
+          && parseFloat(style.animationDelay) === 0
+          && getComputedStyle(document.documentElement).scrollBehavior === 'auto';
+      }));
+    await page.emulateMediaFeatures([]);
+    await page.setViewport({ width: 1440, height: 900 });
 
     console.log('\nSession');
     await page.click('button[aria-label="Sign out"]');

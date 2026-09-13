@@ -48,9 +48,9 @@ export function Topbar({
 
       {/* Each page carries its own large title, so the toolbar only names the section on
           small screens where the sidebar is hidden. */}
-      <h1 className="text-ink truncate text-[14px] font-semibold lg:hidden">{title}</h1>
+      <p className="text-ink min-w-0 flex-1 truncate text-[13px] font-semibold lg:hidden">{title}</p>
 
-      <div className="ml-auto flex items-center gap-1.5">
+      <div className="ml-auto flex shrink-0 items-center gap-1.5">
         {showSearch ? (
           <div className="bg-field border-line focus-within:border-accent focus-within:ring-accent-ring flex h-[30px] items-center gap-1.5 rounded-full border px-3 transition-[border-color,box-shadow] focus-within:ring-3">
             <IconSearch size={14} className="text-muted shrink-0" />
@@ -61,7 +61,7 @@ export function Topbar({
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search"
               aria-label="Search clients"
-              className="text-ink placeholder:text-placeholder w-[110px] bg-transparent text-[13px] outline-none focus-visible:shadow-none sm:w-[200px]"
+              className="text-ink placeholder:text-placeholder w-[64px] bg-transparent text-[13px] outline-none focus-visible:shadow-none sm:w-[200px]"
             />
           </div>
         ) : null}

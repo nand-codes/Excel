@@ -5,7 +5,7 @@ import { useClientActions } from '@/components/clients/ClientActions';
 import { IconCalendar, IconCard, IconEye, IconPlus, IconUsers } from '@/components/icons';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { IconButton, buttonClass } from '@/components/ui/Button';
-import { Card, CardHeader } from '@/components/ui/Card';
+import { CardHeader } from '@/components/ui/Card';
 import { Avatar, EmptyState, LoadingPanel, Pill } from '@/components/ui/Misc';
 import { useClients } from '@/lib/queries';
 import type { Client } from '@/lib/types';
@@ -19,15 +19,15 @@ interface StatCardProps {
 /** The number is the content; the icon is a quiet label, not a coloured badge. */
 function StatCard({ label, value, icon }: StatCardProps) {
   return (
-    <Card interactive className="px-6 py-5">
+    <div className="dashboard-stat min-w-0 py-5 sm:px-6 sm:py-7">
       <span className="text-muted flex items-center gap-1.5 text-[13px]">
-        <span className="shrink-0">{icon}</span>
+        <span className="text-accent shrink-0">{icon}</span>
         {label}
       </span>
-      <span className="text-ink mt-3 block text-[44px] leading-none font-bold tracking-[-0.03em] tabular-nums">
+      <span className="text-ink mt-4 block text-[48px] leading-none font-semibold tabular-nums">
         {value}
       </span>
-    </Card>
+    </div>
   );
 }
 
@@ -55,10 +55,10 @@ export function DashboardPage() {
   }, [clients]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         title="Dashboard"
-        subtitle="Your register at a glance"
+        subtitle="Excel Driving School"
         actions={
           <Link to="/clients/new" className={buttonClass('primary', 'md')}>
             <IconPlus size={14} />
@@ -67,11 +67,11 @@ export function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard label="Total clients" value={stats.total} icon={<IconUsers size={14} />} />
+      <section aria-label="Client summary" className="dashboard-summary grid sm:grid-cols-3">
+        <StatCard label="Total clients" value={isPending || isError ? '—' : stats.total} icon={<IconUsers size={14} />} />
         <StatCard
           label="Added this month"
-          value={stats.thisMonth}
+          value={isPending || isError ? '—' : stats.thisMonth}
           icon={<IconCalendar size={14} />}
         />
         <StatCard
@@ -79,11 +79,12 @@ export function DashboardPage() {
           value={stats.licenceTypes || '—'}
           icon={<IconCard size={14} />}
         />
-      </div>
+      </section>
 
-      <Card className="overflow-hidden">
+      <section aria-label="Recent clients" className="min-w-0 overflow-hidden">
         <CardHeader
           title="Recent clients"
+          className="px-0 pt-2 pb-5"
           actions={
             <Link to="/clients" className={buttonClass('secondary', 'sm')}>
               View all
@@ -159,7 +160,7 @@ export function DashboardPage() {
             </table>
           </div>
         )}
-      </Card>
+      </section>
     </div>
   );
 }

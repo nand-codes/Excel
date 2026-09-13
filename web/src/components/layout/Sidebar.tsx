@@ -32,14 +32,15 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
         open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       )}
     >
-      <div className="flex items-center gap-2.5 px-5 pt-5 pb-4">
-        <img src="/icon.png" alt="" width={30} height={30} className="shrink-0 rounded-[7px]" />
+      <div className="flex items-center gap-3 px-5 pt-8 pb-9">
+        <img src="/icon.png" alt="" width={36} height={36} className="shrink-0 rounded-[8px]" />
         <div className="min-w-0 leading-tight">
-          <div className="text-ink truncate text-[13.5px] font-semibold">Excel Driving School</div>
+          <div className="text-ink text-[17px] font-semibold">Excel</div>
+          <div className="text-muted mt-1 text-[11px]">Driving School</div>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-px px-2.5">
+      <nav aria-label="Main navigation" className="flex-1 space-y-1 px-3">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
@@ -48,7 +49,7 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
-                'rounded-ctl flex items-center gap-2.5 px-2.5 py-[7px] text-[13px] transition-colors duration-150',
+                'rounded-ctl flex min-h-10 items-center gap-3 px-3 py-2.5 text-[13px] transition-colors duration-200',
                 // A tinted row with accent text, the way Finder and Mail mark selection —
                 // not a saturated blue slab with a shadow.
                 isActive
