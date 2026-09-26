@@ -140,6 +140,25 @@ async function textOf(page, selector) {
   return page.$eval(selector, (element) => element.textContent?.trim() ?? '');
 }
 
+/** puppeteer-core here predates page.waitForEvent('popup'). */
+function waitForPopup(browser) {
+  return new Promise((resolve) => {
+    browser.once('targetcreated', async (target) => {
+      if (target.type() !== 'page') return;
+      const popup = await target.page();
+      if (popup) resolve(popup);
+    });
+  });
+}
+
+async function waitForWhatsAppUrl(popup, timeoutMs = 15000) {
+  await popup.waitForFunction(
+    () => /wa\.me|api\.whatsapp\.com/.test(window.location.href),
+    { timeout: timeoutMs }
+  );
+  return popup.url();
+}
+
 /**
  * Date inputs expect a localised format when typed, so set the value directly.
  * React listens to the native setter, hence the descriptor dance.
@@ -299,10 +318,14 @@ async function main() {
     await page.type('#pay-amount', '2500');
     await chooseOption(page, '#pay-method', 'UPI');
     await page.type('#pay-note', 'First instalment');
-    // Unchecked so the test does not try to open a WhatsApp tab.
-    await page.click('#pay-whatsapp');
     await shoot(page, 'add-payment');
+
+    const paymentPopupPromise = waitForPopup(browser);
     await page.click('button::-p-text(Save payment)');
+    const paymentPopup = await paymentPopupPromise;
+    const paymentWaUrl = await waitForWhatsAppUrl(paymentPopup);
+    check('payment receipt opens WhatsApp', /wa\.me|api\.whatsapp\.com/.test(paymentWaUrl));
+    await paymentPopup.close();
 
     await page.waitForFunction(
       () => document.querySelector('[role="dialog"]')?.textContent?.includes('₹2,500') ?? false,
@@ -319,9 +342,18 @@ async function main() {
     const preview = await textOf(page, '#practice-form');
     check('the reminder preview mentions the client', preview.includes('Aparna Krishnan'));
     check('the preview shows a 12-hour time', /9:00 AM/.test(preview), preview.slice(0, 160));
-    await page.click('#practice-whatsapp');
     await shoot(page, 'practice-reminder');
-    await page.keyboard.press('Escape');
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    await setValue(page, '#practice-date', tomorrow.toISOString().slice(0, 10));
+
+    const practicePopupPromise = waitForPopup(browser);
+    await page.click('button::-p-text(Send reminder)');
+    const practicePopup = await practicePopupPromise;
+    const practiceWaUrl = await waitForWhatsAppUrl(practicePopup);
+    check('practice reminder opens WhatsApp', /wa\.me|api\.whatsapp\.com/.test(practiceWaUrl));
+    await practicePopup.close();
     await page.waitForSelector('#practice-date', { hidden: true });
 
     await page.keyboard.press('Escape');

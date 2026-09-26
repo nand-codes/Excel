@@ -9,7 +9,7 @@ import { Sheet } from '@/components/ui/Sheet';
 import { useToast } from '@/components/ui/Toast';
 import { formatLongDate, formatTime12, practiceDateTime, todayYmd } from '@/lib/format';
 import type { Client } from '@/lib/types';
-import { deliverWhatsApp, practiceMessage, reserveWhatsAppTab } from '@/lib/whatsapp';
+import { openWhatsAppDirect, practiceMessage } from '@/lib/whatsapp';
 
 const HOURS = Array.from({ length: 12 }, (_, index) => {
   const value = String(index + 1);
@@ -83,8 +83,10 @@ export function PracticeSheet({ client, onClose }: PracticeSheetProps) {
       return;
     }
 
-    const tab = reserveWhatsAppTab();
-    const result = deliverWhatsApp(tab, client.phone, practiceMessage(client, date, time12));
+    const result = openWhatsAppDirect(
+      client.phone,
+      practiceMessage(client, date, time12)
+    );
     if (result.ok) toast('Opening WhatsApp — press Send to deliver.', 'info');
     else toast(result.error ?? 'Could not open WhatsApp.', 'error');
     onClose();
