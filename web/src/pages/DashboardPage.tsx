@@ -58,7 +58,7 @@ export function DashboardPage() {
     <div className="space-y-8">
       <PageHeader
         title="Dashboard"
-        subtitle="Excel Driving School"
+        subtitle="Excel Driving Institute"
         actions={
           <Link to="/clients/new" className={buttonClass('primary', 'md')}>
             <IconPlus size={14} />

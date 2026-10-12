@@ -1,4 +1,4 @@
-# Excel Driving School — Client Manager
+# Excel Driving Institute — Client Manager
 
 Web app for managing driving-school clients: an Express API over SQLite plus a React front end with a macOS-style interface. Staff sign in from a browser and all of them see the same records.
 

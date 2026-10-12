@@ -1,5 +1,5 @@
 [Unit]
-Description=Excel Driving School API
+Description=Excel Driving Institute API
 Documentation=https://github.com/nandana-suresh-c/Excel
 After=network-online.target
 Wants=network-online.target

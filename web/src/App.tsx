@@ -23,7 +23,7 @@ function pageTitle(pathname: string): string {
   if (pathname.startsWith('/clients/') && pathname.endsWith('/edit')) return 'Edit Client';
   if (pathname === '/reports') return 'Reports & Analytics';
   if (pathname === '/settings') return 'Settings';
-  return 'Excel Driving School';
+  return 'Excel Driving Institute';
 }
 
 function AppShell({ user }: { user: User }) {

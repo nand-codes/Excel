@@ -110,14 +110,14 @@ export function deliverWhatsApp(
 export function registrationMessage(client: Pick<Client, 'name'>): string {
   return (
     `Dear ${client.name}, congratulations! You have been successfully registered with ` +
-    'Excel Driving School. We look forward to helping you with your training. — Excel Driving School'
+    'Excel Driving Institute. We look forward to helping you with your training. — Excel Driving Institute'
   );
 }
 
 export function paymentMessage(client: Pick<Client, 'name'>, amount: number, total: number): string {
   return (
     `Dear ${client.name}, payment of ${formatMoney(amount)} received. ` +
-    `Total paid so far: ${formatMoney(total)}. - Excel Driving School`
+    `Total paid so far: ${formatMoney(total)}. - Excel Driving Institute`
   );
 }
 
@@ -127,7 +127,7 @@ export function practiceMessage(
   time12: string
 ): string {
   return (
-    `Dear ${client.name}, please be available at Excel Driving School on ${formatLongDate(dateYmd)} ` +
-    `at ${time12} for driving practice. Thank you. — Excel Driving School`
+    `Dear ${client.name}, please be available at Excel Driving Institute on ${formatLongDate(dateYmd)} ` +
+    `at ${time12} for driving practice. Thank you. — Excel Driving Institute`
   );
 }

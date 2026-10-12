@@ -145,7 +145,7 @@ export function PracticeSheet({ client, onClose }: PracticeSheetProps) {
 
         {client && date ? (
           <p className="bg-field/70 border-line text-ink-soft rounded-ctl border px-3 py-2.5 text-[12.5px] leading-relaxed">
-            WhatsApp will ask <strong>{client.name}</strong> to be available at Excel Driving School
+            WhatsApp will ask <strong>{client.name}</strong> to be available at Excel Driving Institute
             on {formatLongDate(date)} at {time12} for driving practice.
           </p>
         ) : null}

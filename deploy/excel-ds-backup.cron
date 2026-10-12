@@ -1,4 +1,4 @@
-# Nightly database backup for Excel Driving School.
+# Nightly database backup for Excel Driving Institute.
 # Installed as /etc/cron.d/excel-ds-backup (root-owned, mode 644, no execute bit).
 #
 # Times are in the instance timezone. Set it once with:

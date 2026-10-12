@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Excel Driving School — React web client",
+  "description": "Excel Driving Institute — React web client",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

@@ -1,4 +1,4 @@
--- Excel Driving School — application database (SQLite)
+-- Excel Driving Institute — application database (SQLite)
 -- Used by db/clientStore.js via Node.js built-in node:sqlite (DatabaseSync).
 -- This file is a readable reference; the runtime schema is applied by clientStore.js.
 

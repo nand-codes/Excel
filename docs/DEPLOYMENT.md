@@ -1,6 +1,6 @@
 # Deployment runbook
 
-Everything needed to put Excel Driving School on AWS and keep it running: one Lightsail
+Everything needed to put Excel Driving Institute on AWS and keep it running: one Lightsail
 instance in Mumbai, Caddy terminating HTTPS, the Express API behind it, and SQLite on the
 instance disk with nightly snapshots to S3.
 

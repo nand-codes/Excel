@@ -49,7 +49,7 @@ export function LoginPage() {
           className="rounded-[18px] shadow-mac-lg"
         />
         <h1 className="text-ink mt-7 text-[32px] leading-[1.15] font-semibold">
-          Excel Driving School
+          Excel Driving Institute
         </h1>
         <p className="text-muted mt-3 max-w-[34ch] text-[15px] leading-relaxed">
           Sign in

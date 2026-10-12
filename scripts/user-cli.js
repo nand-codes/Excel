@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Account management for the Excel Driving School web app.
+ * Account management for the Excel Driving Institute web app.
  * There is no self-signup; accounts exist only because they were created here.
  *
  * Usage:

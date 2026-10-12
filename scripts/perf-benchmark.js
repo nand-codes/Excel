@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Excel Driving School — database performance benchmark.
+ * Excel Driving Institute — database performance benchmark.
  *
  * Uses the same clientStore the API uses. Writes a temporary SQLite file under the
  * system temp directory and deletes it when done.
@@ -137,7 +137,7 @@ function main() {
     return;
   }
 
-  console.log('\n Excel Driving School — DB performance benchmark\n');
+  console.log('\n Excel Driving Institute — DB performance benchmark\n');
   console.log(`  Clients inserted:     ${n}`);
   console.log(`  Rows returned:        ${out.rowsRead}`);
   console.log('—'.repeat(52));

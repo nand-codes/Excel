@@ -36,7 +36,7 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
         <img src="/icon.png" alt="" width={36} height={36} className="shrink-0 rounded-[8px]" />
         <div className="min-w-0 leading-tight">
           <div className="text-ink text-[17px] font-semibold">Excel</div>
-          <div className="text-muted mt-1 text-[11px]">Driving School</div>
+          <div className="text-muted mt-1 text-[11px]">Driving Institute</div>
         </div>
       </div>
 

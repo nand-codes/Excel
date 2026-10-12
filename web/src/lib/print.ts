@@ -64,9 +64,9 @@ export function printRegister(clients: Client[]): void {
   });
 
   printHtml(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <title>Excel Driving School — Client Register</title>
+    <title>Excel Driving Institute — Client Register</title>
     <style>${REGISTER_STYLES}</style></head><body>
-    <h1>Excel Driving School — Client Register</h1>
+    <h1>Excel Driving Institute — Client Register</h1>
     <p>Printed on ${printedOn} &nbsp;|&nbsp; Total Clients: ${clients.length}</p>
     <table>
       <thead><tr>
@@ -121,7 +121,7 @@ export function printClientCard(client: Client): void {
       <div class="header">
         <div class="avatar">${escapeHtml(getInitial(client.name))}</div>
         <div>
-          <div class="school">Excel Driving School</div>
+          <div class="school">Excel Driving Institute</div>
           <div class="school-sub">Client Identity Card</div>
         </div>
       </div>

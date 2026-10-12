@@ -1,7 +1,7 @@
 {
   "name": "excel-driving-school",
   "version": "1.0.0",
-  "description": "Excel Driving School — Client Management System (web app + API)",
+  "description": "Excel Driving Institute — Client Management System (web app + API)",
   "main": "server/index.js",
   "scripts": {
     "server": "node server/index.js",
@@ -27,7 +27,7 @@
     "url": "git+https://github.com/nandana-suresh-c/Excel.git"
   },
   "keywords": [],
-  "author": "Excel Driving School",
+  "author": "Excel Driving Institute",
   "license": "ISC",
   "type": "commonjs",
   "engines": {

@@ -1,4 +1,4 @@
-# Excel Driving School — application spec
+# Excel Driving Institute — application spec
 
 Authoritative record of behaviour and visual design, extracted from the original Electron implementation (`app.js`, `index.html`, `style.css`) before those files were removed. The React web app in [`web/`](../web) is built to this spec.
 
@@ -98,19 +98,19 @@ Phone normalisation: strip non-digits; drop a leading `0` from an 11-digit numbe
 Registration (sent when "Send registration welcome on WhatsApp" is checked on create):
 
 ```
-Dear {name}, congratulations! You have been successfully registered with Excel Driving School. We look forward to helping you with your training. — Excel Driving School
+Dear {name}, congratulations! You have been successfully registered with Excel Driving Institute. We look forward to helping you with your training. — Excel Driving Institute
 ```
 
 Payment received (sent when the payment dialog's WhatsApp option is checked):
 
 ```
-Dear {name}, payment of {amount} received. Total paid so far: {total}. - Excel Driving School
+Dear {name}, payment of {amount} received. Total paid so far: {total}. - Excel Driving Institute
 ```
 
 Practice reminder:
 
 ```
-Dear {name}, please be available at Excel Driving School on {longDate} at {time12} for driving practice. Thank you. — Excel Driving School
+Dear {name}, please be available at Excel Driving Institute on {longDate} at {time12} for driving practice. Thank you. — Excel Driving Institute
 ```
 
 `{longDate}` is `en-IN` with weekday, numeric day, long month and numeric year (built from the date at noon to avoid timezone drift). `{time12}` is `h:mm AM/PM`. Amounts use the money format below.
@@ -167,7 +167,7 @@ In the browser the tab must be opened **synchronously** on the click and its URL
 - **Monthly Registrations** — vertical bars for the last 6 calendar months including the current one, short month labels, minimum bar height 4 px scaled against the busiest month.
 - **Complete Client Register** — every client in creation order. Columns: `#`, Name, App. no., Guardian, Phone, Alt. phone, DOB, Blood Group, Licence, Address, Registered.
 - Empty state for all four: `No data yet.`
-- Print Register opens a printable table with the header `Excel Driving School — Client Register`, the print date and total client count, and columns `#`, Name, App. no., Guardian, Phone, Alt. phone, DOB, Blood Group, Licence, Address.
+- Print Register opens a printable table with the header `Excel Driving Institute — Client Register`, the print date and total client count, and columns `#`, Name, App. no., Guardian, Phone, Alt. phone, DOB, Blood Group, Licence, Address.
 
 ### Settings
 

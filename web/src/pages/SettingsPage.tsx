@@ -218,7 +218,7 @@ export function SettingsPage() {
           <div className="flex items-center gap-3.5">
             <img src="/icon.png" alt="" width={44} height={44} className="rounded-card shrink-0" />
             <div>
-              <p className="font-display text-ink text-[15px] font-bold">Excel Driving School</p>
+              <p className="font-display text-ink text-[15px] font-bold">Excel Driving Institute</p>
               <p className="text-muted text-[12px]">Client Management System · v1.0</p>
             </div>
           </div>
@@ -259,6 +259,11 @@ export function SettingsPage() {
           </div>
         </CardBody>
       </Card>
+
+      <p className="text-muted px-1 pb-2 text-center text-[11.5px] leading-relaxed">
+        This application is licensed for use by Excel Driving Institute only. Unauthorized
+        copying, redistribution or use by any other person or organization is not permitted.
+      </p>
 
       <ConfirmSheet
         open={Boolean(pendingImport)}

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# One-time server setup for Excel Driving School on Ubuntu 24.04 (Lightsail, ap-south-1).
+# One-time server setup for Excel Driving Institute on Ubuntu 24.04 (Lightsail, ap-south-1).
 # Installs Node 22 and Caddy, creates the service account and directories, and installs
 # the systemd unit. Safe to re-run: every step checks before acting.
 #
