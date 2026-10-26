@@ -8,6 +8,7 @@
    See docs/APP_SPEC.md for the authoritative list.
    ────────────────────────────────────────────────────────────── */
 :root {
+  color-scheme: light;
   --app-accent: #0071e3;
   --app-accent-secondary: #004aad;
   --app-accent-hover: #0077ed;
@@ -54,6 +55,7 @@
 }
 
 html.dark {
+  color-scheme: dark;
   --app-accent: #0a84ff;
   --app-accent-secondary: #b0deff;
   --app-accent-hover: #409cff;
@@ -68,7 +70,7 @@ html.dark {
   /* Deep black, the way Apple's dark marketing pages are built: the surfaces are
      translucent white films over the black rather than lighter greys. */
   --app-page: #000000;
-  --app-elevated: rgb(28 28 30 / 0.82);
+  --app-elevated: #1c1c1e;
   --app-card: rgb(255 255 255 / 0.05);
   --app-card-hover: rgb(255 255 255 / 0.08);
   --app-thead: rgb(10 10 12 / 0.88);
@@ -207,10 +209,7 @@ html.dark {
 
   input[type='date']::-webkit-calendar-picker-indicator {
     cursor: pointer;
-    opacity: 0.55;
-  }
-  html.dark input[type='date']::-webkit-calendar-picker-indicator {
-    filter: invert(1);
+    opacity: 1;
   }
 }
 

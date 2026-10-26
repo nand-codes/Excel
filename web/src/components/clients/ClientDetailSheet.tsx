@@ -1,13 +1,111 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { IconCalendar, IconEdit, IconPrint, IconRupee, IconTrash } from '@/components/icons';
 import { Button, IconButton } from '@/components/ui/Button';
-import { Avatar, LoadingPanel, Pill } from '@/components/ui/Misc';
+import { Avatar, LoadingPanel, Pill, SegmentedControl } from '@/components/ui/Misc';
 import { Sheet, SheetTitle } from '@/components/ui/Sheet';
 import { useToast } from '@/components/ui/Toast';
 import { formatIsoDate, formatDob, formatMoney, getAge } from '@/lib/format';
-import { useDeletePayment, usePayments } from '@/lib/queries';
+import { useDeletePayment, useDeletePractice, usePayments, usePractices } from '@/lib/queries';
 import type { Client } from '@/lib/types';
+
+type DetailView = 'payments' | 'practice';
+
+const VIEW_OPTIONS: { value: DetailView; label: string }[] = [
+  { value: 'payments', label: 'Payments' },
+  { value: 'practice', label: 'Practice history' },
+];
+
+function PracticeHistory({ clientId }: { clientId: string }) {
+  const { toast } = useToast();
+  const practices = usePractices(clientId);
+  const deletePractice = useDeletePractice();
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  if (practices.isPending) return <LoadingPanel label="Loading practice history…" />;
+  if (practices.isError) {
+    return <p className="text-muted py-4 text-center text-[12.5px]">Could not load practice history.</p>;
+  }
+
+  const list = practices.data;
+
+  function confirmDelete(id: string) {
+    deletePractice.mutate(id, {
+      onSuccess: () => {
+        setPendingDeleteId(null);
+        toast('Practice entry deleted.', 'info');
+      },
+      onError: () => toast('Could not delete practice entry.', 'error'),
+    });
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="bg-field/60 border-line rounded-ctl w-fit border px-3 py-2.5">
+        <span className="text-muted block text-[11.5px]">Total sessions</span>
+        <span className="text-ink block text-[20px] font-bold">{list.length}</span>
+      </div>
+
+      {!list.length ? (
+        <p className="text-muted py-4 text-center text-[12.5px]">No practice sessions recorded yet.</p>
+      ) : (
+        list.map((practice, index) => {
+          const when = new Date(practice.scheduledAt);
+          const dateLabel = when.toLocaleDateString('en-IN', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          });
+          const timeLabel = when.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+
+          return (
+            <div
+              key={practice.id}
+              className="bg-field/60 border-line rounded-ctl flex items-center justify-between gap-3 border px-3 py-2.5"
+            >
+              <div className="min-w-0">
+                <span className="text-ink block text-[14px] font-bold">
+                  #{list.length - index} · {dateLabel}
+                </span>
+                <span className="text-muted block truncate text-[11.5px]">
+                  {[timeLabel, practice.createdBy && `by ${practice.createdBy}`]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+              </div>
+
+              {pendingDeleteId === practice.id ? (
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-muted text-[11.5px]">Delete?</span>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => confirmDelete(practice.id)}
+                    disabled={deletePractice.isPending}
+                  >
+                    Yes
+                  </Button>
+                  <Button size="sm" onClick={() => setPendingDeleteId(null)}>
+                    No
+                  </Button>
+                </div>
+              ) : (
+                <IconButton
+                  label="Delete practice entry"
+                  tone="danger"
+                  onClick={() => setPendingDeleteId(practice.id)}
+                >
+                  <IconTrash size={15} />
+                </IconButton>
+              )}
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+}
 
 interface DetailRowProps {
   label: string;
@@ -47,6 +145,11 @@ export function ClientDetailSheet({
   const payments = usePayments(client?.id ?? null);
   const deletePayment = useDeletePayment();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [view, setView] = useState<DetailView>('payments');
+
+  useEffect(() => {
+    setView('payments');
+  }, [client?.id]);
 
   const age = client ? getAge(client.dob) : null;
 
@@ -138,6 +241,19 @@ export function ClientDetailSheet({
               </div>
             </div>
 
+            <SegmentedControl
+              className="mt-4 w-fit"
+              value={view}
+              onChange={setView}
+              options={VIEW_OPTIONS}
+              ariaLabel="Client history"
+            />
+
+            {view === 'practice' ? (
+              <div className="mt-4">
+                <PracticeHistory clientId={client.id} />
+              </div>
+            ) : (
             <div className="mt-4 space-y-2">
               {payments.isPending ? (
                 <LoadingPanel label="Loading payments…" />
@@ -196,6 +312,7 @@ export function ClientDetailSheet({
                 })
               )}
             </div>
+            )}
           </div>
         </div>
       ) : null}

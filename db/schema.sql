@@ -38,6 +38,18 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE INDEX IF NOT EXISTS idx_payments_client ON payments(client_id);
 CREATE INDEX IF NOT EXISTS idx_payments_paid_at ON payments(paid_at);
 
+-- One row per "Call for practice" reminder.
+CREATE TABLE IF NOT EXISTS practice_sessions (
+  id TEXT PRIMARY KEY,
+  client_id TEXT NOT NULL,
+  scheduled_at TEXT NOT NULL,    -- ISO timestamp of the practice slot
+  created_at TEXT NOT NULL,
+  created_by TEXT,
+  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_practice_client ON practice_sessions(client_id);
+
 -- Staff accounts. Created only through `npm run user:add`; there is no self-signup.
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,

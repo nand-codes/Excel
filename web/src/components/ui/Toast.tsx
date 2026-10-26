@@ -53,7 +53,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={current.id}
             className={cn(
-              'bg-elevated/95 border-line rounded-card shadow-mac-lg pointer-events-auto flex max-w-[min(92vw,460px)] items-center gap-2.5',
+              'bg-elevated border-line rounded-card shadow-mac-lg pointer-events-auto flex max-w-[min(92vw,460px)] items-center gap-2.5',
               'border px-4 py-3 text-[13.5px] font-medium backdrop-blur-2xl',
               'animate-[toastIn_220ms_var(--ease-spring)]'
             )}

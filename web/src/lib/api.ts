@@ -1,4 +1,12 @@
-import type { Client, ClientInput, ImportResult, Payment, PaymentInput, User } from './types';
+import type {
+  Client,
+  ClientInput,
+  ImportResult,
+  Payment,
+  PaymentInput,
+  PracticeSession,
+  User,
+} from './types';
 
 export type FieldErrors = Record<string, string>;
 
@@ -125,4 +133,17 @@ export const api = {
       'DELETE',
       `/payments/${encodeURIComponent(id)}`
     ),
+
+  // ── Practice sessions ────────────────────────────────────────────
+  listPractices: (clientId: string) =>
+    request<{ practices: PracticeSession[] }>(
+      'GET',
+      `/clients/${encodeURIComponent(clientId)}/practices`
+    ).then((r) => r.practices),
+
+  addPractice: (clientId: string, scheduledAt: string) =>
+    request<{ practice: PracticeSession }>('POST', '/practices', { clientId, scheduledAt }),
+
+  deletePractice: (id: string) =>
+    request<{ ok: true; clientId: string }>('DELETE', `/practices/${encodeURIComponent(id)}`),
 };

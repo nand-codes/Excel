@@ -166,6 +166,28 @@ function validatePayment(input) {
   };
 }
 
+function validatePractice(input) {
+  const fields = {};
+  const body = input && typeof input === 'object' ? input : {};
+
+  const clientId = text(body.clientId);
+  if (!clientId) fields.clientId = 'Client is required.';
+  else if (!ID_RE.test(clientId)) fields.clientId = 'Invalid client id.';
+
+  const parsed = new Date(text(body.scheduledAt));
+  if (!text(body.scheduledAt) || Number.isNaN(parsed.getTime())) {
+    fields.scheduledAt = 'Select a valid practice date and time.';
+  }
+
+  if (Object.keys(fields).length) return { ok: false, fields };
+
+  return {
+    ok: true,
+    fields,
+    value: { id: newId('pr'), clientId, scheduledAt: parsed.toISOString() },
+  };
+}
+
 function isoOrNow(value) {
   if (!value) return new Date().toISOString();
   const parsed = new Date(value);
@@ -177,4 +199,4 @@ function newId(prefix) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-module.exports = { validateClient, validatePayment, ageFromDob, newId, PHONE_RE };
+module.exports = { validateClient, validatePayment, validatePractice, ageFromDob, newId, PHONE_RE };

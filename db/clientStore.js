@@ -79,6 +79,17 @@ function createClientStore(dbFilePath) {
     CREATE INDEX IF NOT EXISTS idx_payments_client ON payments(client_id);
     CREATE INDEX IF NOT EXISTS idx_payments_paid_at ON payments(paid_at);
 
+    CREATE TABLE IF NOT EXISTS practice_sessions (
+      id TEXT PRIMARY KEY,
+      client_id TEXT NOT NULL,
+      scheduled_at TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      created_by TEXT,
+      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_practice_client ON practice_sessions(client_id);
+
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       username TEXT NOT NULL UNIQUE,
@@ -199,6 +210,23 @@ function createClientStore(dbFilePath) {
     FROM payments
     WHERE id = ?
   `);
+
+  const PRACTICE_COLUMNS = `
+      id,
+      client_id AS clientId,
+      scheduled_at AS scheduledAt,
+      created_at AS createdAt,
+      created_by AS createdBy`;
+
+  const insertPracticeStmt = db.prepare(`
+    INSERT INTO practice_sessions (id, client_id, scheduled_at, created_at, created_by)
+    VALUES ($id, $clientId, $scheduledAt, $createdAt, $createdBy)
+  `);
+  const selectPracticesByClientStmt = db.prepare(`
+    SELECT ${PRACTICE_COLUMNS} FROM practice_sessions WHERE client_id = ? ORDER BY scheduled_at DESC
+  `);
+  const selectPracticeStmt = db.prepare(`SELECT ${PRACTICE_COLUMNS} FROM practice_sessions WHERE id = ?`);
+  const deletePracticeStmt = db.prepare('DELETE FROM practice_sessions WHERE id = ?');
 
   const insertUserStmt = db.prepare(`
     INSERT INTO users (id, username, display_name, password_hash, role, created_at)
@@ -357,6 +385,30 @@ function createClientStore(dbFilePath) {
 
     deletePayment(id) {
       const result = deletePaymentStmt.run(String(id));
+      return result.changes > 0;
+    },
+
+    // ── Practice sessions ────────────────────────────────────────
+    addPractice({ id, clientId, scheduledAt, createdBy }) {
+      insertPracticeStmt.run({
+        id: String(id),
+        clientId: String(clientId),
+        scheduledAt: String(scheduledAt),
+        createdAt: new Date().toISOString(),
+        createdBy: optionalText(createdBy, 80),
+      });
+    },
+
+    getPractice(id) {
+      return selectPracticeStmt.get(String(id)) || null;
+    },
+
+    getPracticesByClient(clientId) {
+      return selectPracticesByClientStmt.all(String(clientId));
+    },
+
+    deletePractice(id) {
+      const result = deletePracticeStmt.run(String(id));
       return result.changes > 0;
     },
 

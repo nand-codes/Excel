@@ -65,7 +65,7 @@ export function Select({
           position="popper"
           sideOffset={6}
           className={cn(
-            'bg-elevated/95 border-line rounded-card shadow-mac-lg z-50 max-h-[320px] overflow-hidden border backdrop-blur-2xl',
+            'bg-elevated border-line rounded-card shadow-mac-lg z-50 max-h-[320px] overflow-hidden border backdrop-blur-2xl',
             'data-[state=open]:animate-[fadeIn_120ms_var(--ease-mac)]'
           )}
         >

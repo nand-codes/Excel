@@ -190,6 +190,95 @@ async function shoot(page, name) {
   return file;
 }
 
+async function auditAppearance(page, name, menuTrigger) {
+  const viewport = page.viewport();
+  const wasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'));
+  try {
+    for (const theme of ['light', 'dark']) {
+      await page.emulateMediaFeatures([
+        { name: 'prefers-color-scheme', value: theme === 'light' ? 'dark' : 'light' },
+      ]);
+      await page.evaluate((appearance) => {
+        document.documentElement.classList.toggle('dark', appearance === 'dark');
+      }, theme);
+      for (const width of [1440, 390]) {
+        await page.setViewport({ width, height: width === 390 ? 844 : 900 });
+        await page.waitForFunction((screenWidth) => {
+          const sidebar = document.querySelector('aside');
+          if (!sidebar) return true;
+          const bounds = sidebar.getBoundingClientRect();
+          return screenWidth >= 1024 ? bounds.left === 0 : bounds.right <= 0;
+        }, {}, width);
+        if (menuTrigger) {
+          await page.$eval(menuTrigger, (element) => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
+          await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+          await page.click(menuTrigger);
+          await page.waitForSelector('[role="listbox"]', { visible: true });
+        }
+        await shoot(page, `${name}-${theme}-${width}`);
+        const result = await page.evaluate(() => {
+          const visible = (element) => element.getClientRects().length > 0
+            && getComputedStyle(element).visibility !== 'hidden';
+          const controls = Array.from(document.querySelectorAll('input, select, textarea')).filter(visible);
+          const dates = controls.filter((element) => element.type === 'date');
+          const surfaces = Array.from(document.querySelectorAll('[role="dialog"], [role="listbox"]')).filter(visible);
+          const canvas = document.createElement('canvas');
+          canvas.width = 1;
+          canvas.height = 1;
+          const context = canvas.getContext('2d');
+          return {
+            scheme: getComputedStyle(document.documentElement).colorScheme,
+            menuVisible: surfaces.some((element) => element.getAttribute('role') === 'listbox'),
+            controls: controls.map((element) => getComputedStyle(element).colorScheme),
+            indicators: dates.map((element) => {
+              const style = getComputedStyle(element, '::-webkit-calendar-picker-indicator');
+              return { filter: style.filter, opacity: style.opacity, display: style.display };
+            }),
+            fits: document.documentElement.scrollWidth <= window.innerWidth,
+            opaqueSurfaces: surfaces.every((element) => {
+              context.clearRect(0, 0, 1, 1);
+              context.fillStyle = getComputedStyle(element).backgroundColor;
+              context.fillRect(0, 0, 1, 1);
+              return context.getImageData(0, 0, 1, 1).data[3] === 255;
+            }),
+          };
+        });
+        const label = `${name} ${theme} ${width}px`;
+        check(`${label}: native controls match app, not OS`, result.scheme === theme
+          && result.controls.every((scheme) => scheme === theme));
+        check(`${label}: no page overflow`, result.fits);
+        check(`${label}: overlay surfaces prevent text bleed-through`, result.opaqueSurfaces);
+        if (menuTrigger) {
+          check(`${label}: dropdown is open`, result.menuVisible);
+          await page.keyboard.press('Escape');
+          await page.waitForSelector('[role="listbox"]', { hidden: true });
+        }
+        if (result.indicators.length) {
+          check(`${label}: calendar icons are not inverted or faded`, result.indicators.every(
+            (indicator) => indicator.filter === 'none' && Number(indicator.opacity) === 1
+              && indicator.display !== 'none'));
+          const dates = await page.$$('input[type="date"]');
+          for (const [index, date] of dates.entries()) {
+            if (await date.isVisible()) {
+              await date.screenshot({ path: path.join(SHOT_DIR, `${name}-${theme}-${width}-date-${index}.png`) });
+            }
+          }
+        }
+      }
+    }
+  } finally {
+    await page.setViewport(viewport);
+    await page.emulateMediaFeatures([]);
+    await page.evaluate((dark) => document.documentElement.classList.toggle('dark', dark), wasDark);
+    if (viewport.width >= 1024) {
+      await page.waitForFunction(() => {
+        const sidebar = document.querySelector('aside');
+        return !sidebar || sidebar.getBoundingClientRect().left === 0;
+      });
+    }
+  }
+}
+
 async function main() {
   PORT = await findFreePort();
   BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -232,6 +321,7 @@ async function main() {
     await page.waitForSelector('#username');
     check('login screen is shown to a signed-out visitor', true);
     await shoot(page, 'login');
+    await auditAppearance(page, 'login');
 
     await page.type('#username', USER.username);
     await page.type('#password', 'wrong-password');
@@ -259,6 +349,8 @@ async function main() {
     await chooseOption(page, '#f-licence', 'LMV + MCWG');
     await page.type('#f-address', 'Thattarambalam, Mavelikara, Alappuzha 690103');
     await shoot(page, 'add-client');
+    await auditAppearance(page, 'add-client');
+    await auditAppearance(page, 'blood-group-menu', '#f-blood');
 
     // The welcome message would open a WhatsApp tab; not wanted in a test run.
     await page.click('#f-welcome');
@@ -282,6 +374,7 @@ async function main() {
     check('the application number is listed', firstRow.includes('KL/2026/004421'));
     check('the alternate number is listed', firstRow.includes('9847099887'));
     await shoot(page, 'clients');
+    await auditAppearance(page, 'clients');
 
     console.log('\nValidation in the browser');
     await page.click('nav a[href="/clients/new"]');
@@ -302,6 +395,7 @@ async function main() {
     check('the dashboard counts the client', dashboardText.includes('Total clients'));
     check('recent clients lists the new record', dashboardText.includes('Aparna Krishnan'));
     await shoot(page, 'dashboard');
+    await auditAppearance(page, 'dashboard');
 
     console.log('\nClient detail');
     await page.click('table tbody tr button[aria-label^="View"]');
@@ -311,6 +405,7 @@ async function main() {
     check('payments start at zero', dialogText.includes('₹0'), dialogText.slice(0, 200));
     check('the guardian is shown', dialogText.includes('Krishnan Nair'));
     await shoot(page, 'client-detail');
+    await auditAppearance(page, 'client-detail');
 
     console.log('\nPayments');
     await page.click('[role="dialog"] button::-p-text(Add payment)');
@@ -319,6 +414,7 @@ async function main() {
     await chooseOption(page, '#pay-method', 'UPI');
     await page.type('#pay-note', 'First instalment');
     await shoot(page, 'add-payment');
+    await auditAppearance(page, 'add-payment');
 
     const paymentPopupPromise = waitForPopup(browser);
     await page.click('button::-p-text(Save payment)');
@@ -343,6 +439,7 @@ async function main() {
     check('the reminder preview mentions the client', preview.includes('Aparna Krishnan'));
     check('the preview shows a 12-hour time', /9:00 AM/.test(preview), preview.slice(0, 160));
     await shoot(page, 'practice-reminder');
+    await auditAppearance(page, 'practice-reminder');
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -356,8 +453,12 @@ async function main() {
     await practicePopup.close();
     await page.waitForSelector('#practice-date', { hidden: true });
 
-    await page.keyboard.press('Escape');
-    await page.waitForSelector('[role="dialog"]', { hidden: true });
+    await page.click('[role="radio"]::-p-text(Practice history)');
+    await page.waitForFunction(() => document.querySelector('[role="dialog"]')?.textContent?.includes('Total sessions'));
+    await auditAppearance(page, 'practice-history');
+    await page.click('[role="dialog"] button::-p-text(Edit client)');
+    await page.waitForSelector('#f-dob');
+    await auditAppearance(page, 'edit-client');
 
     console.log('\nReports');
     await page.click('nav a[href="/reports"]');
@@ -368,6 +469,7 @@ async function main() {
     check('monthly chart renders', reportsText.includes('Monthly registrations'));
     check('the register table renders', reportsText.includes('Complete client register'));
     await shoot(page, 'reports');
+    await auditAppearance(page, 'reports');
 
     console.log('\nSettings and appearance');
     await page.click('nav a[href="/settings"]');
@@ -375,6 +477,7 @@ async function main() {
       () => document.querySelector('main')?.textContent?.includes('Data management') ?? false
     );
     check('settings page renders', true);
+    await auditAppearance(page, 'settings');
 
     const isDark = () => page.evaluate(() => document.documentElement.classList.contains('dark'));
 

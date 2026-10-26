@@ -8,6 +8,7 @@ import { Select } from '@/components/ui/Select';
 import { Sheet } from '@/components/ui/Sheet';
 import { useToast } from '@/components/ui/Toast';
 import { formatLongDate, formatTime12, practiceDateTime, todayYmd } from '@/lib/format';
+import { useAddPractice } from '@/lib/queries';
 import type { Client } from '@/lib/types';
 import { openWhatsAppDirect, practiceMessage } from '@/lib/whatsapp';
 
@@ -33,6 +34,7 @@ interface PracticeSheetProps {
 
 export function PracticeSheet({ client, onClose }: PracticeSheetProps) {
   const { toast } = useToast();
+  const addPractice = useAddPractice();
 
   const [date, setDate] = useState(todayYmd());
   const [hour, setHour] = useState('9');
@@ -78,7 +80,8 @@ export function PracticeSheet({ client, onClose }: PracticeSheetProps) {
     }
 
     if (!sendWhatsApp) {
-      toast('WhatsApp was not opened (option unchecked).', 'info');
+      toast('Practice session saved. WhatsApp was not opened (option unchecked).', 'info');
+      recordPractice(client.id, when);
       onClose();
       return;
     }
@@ -89,7 +92,16 @@ export function PracticeSheet({ client, onClose }: PracticeSheetProps) {
     );
     if (result.ok) toast('Opening WhatsApp — press Send to deliver.', 'info');
     else toast(result.error ?? 'Could not open WhatsApp.', 'error');
+    recordPractice(client.id, when);
     onClose();
+  }
+
+  // Fired after WhatsApp opens so the popup stays inside the click gesture.
+  function recordPractice(clientId: string, when: Date) {
+    addPractice.mutate(
+      { clientId, scheduledAt: when.toISOString() },
+      { onError: () => toast('Could not save the practice session to history.', 'error') }
+    );
   }
 
   return (

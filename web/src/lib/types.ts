@@ -44,6 +44,14 @@ export interface PaymentInput {
   note: string | null;
 }
 
+export interface PracticeSession {
+  id: string;
+  clientId: string;
+  scheduledAt: string;
+  createdAt: string;
+  createdBy: string | null;
+}
+
 export interface User {
   id: string;
   username: string;

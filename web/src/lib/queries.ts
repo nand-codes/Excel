@@ -7,6 +7,7 @@ export const queryKeys = {
   session: ['session'] as const,
   clients: ['clients'] as const,
   payments: (clientId: string) => ['payments', clientId] as const,
+  practices: (clientId: string) => ['practices', clientId] as const,
 };
 
 /** Resolves to null when nobody is signed in, so the app can show the login screen. */
@@ -106,6 +107,36 @@ export function useDeletePayment() {
     mutationFn: (id: string) => api.deletePayment(id),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.payments(result.clientId) });
+    },
+  });
+}
+
+export function usePractices(clientId: string | null) {
+  return useQuery({
+    queryKey: queryKeys.practices(clientId ?? 'none'),
+    queryFn: () => api.listPractices(clientId as string),
+    enabled: Boolean(clientId),
+    staleTime: 10 * 1000,
+  });
+}
+
+export function useAddPractice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ clientId, scheduledAt }: { clientId: string; scheduledAt: string }) =>
+      api.addPractice(clientId, scheduledAt),
+    onSuccess: (_result, { clientId }) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.practices(clientId) });
+    },
+  });
+}
+
+export function useDeletePractice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.deletePractice(id),
+    onSuccess: (result) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.practices(result.clientId) });
     },
   });
 }
