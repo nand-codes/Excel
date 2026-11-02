@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { TestHistory } from '@/components/clients/TestSheet';
 
 import { IconCalendar, IconEdit, IconPrint, IconRupee, IconTrash } from '@/components/icons';
 import { Button, IconButton } from '@/components/ui/Button';
@@ -9,11 +10,12 @@ import { formatIsoDate, formatDob, formatMoney, getAge } from '@/lib/format';
 import { useDeletePayment, useDeletePractice, usePayments, usePractices } from '@/lib/queries';
 import type { Client } from '@/lib/types';
 
-type DetailView = 'payments' | 'practice';
+type DetailView = 'payments' | 'practice' | 'tests';
 
 const VIEW_OPTIONS: { value: DetailView; label: string }[] = [
   { value: 'payments', label: 'Payments' },
   { value: 'practice', label: 'Practice history' },
+  { value: 'tests', label: 'Test dates' },
 ];
 
 function PracticeHistory({ clientId }: { clientId: string }) {
@@ -131,6 +133,7 @@ interface ClientDetailSheetProps {
   onPrintCard: (client: Client) => void;
   onAddPayment: (client: Client) => void;
   onSchedulePractice: (client: Client) => void;
+  onScheduleTest: (client: Client) => void;
 }
 
 export function ClientDetailSheet({
@@ -140,6 +143,7 @@ export function ClientDetailSheet({
   onPrintCard,
   onAddPayment,
   onSchedulePractice,
+  onScheduleTest,
 }: ClientDetailSheetProps) {
   const { toast } = useToast();
   const payments = usePayments(client?.id ?? null);
@@ -234,6 +238,10 @@ export function ClientDetailSheet({
                   <IconCalendar size={14} />
                   Practice day
                 </Button>
+                <Button size="sm" onClick={() => onScheduleTest(client)}>
+                  <IconCalendar size={14} />
+                  Inform test date
+                </Button>
                 <Button size="sm" onClick={() => onPrintCard(client)}>
                   <IconPrint size={14} />
                   Print card
@@ -242,14 +250,16 @@ export function ClientDetailSheet({
             </div>
 
             <SegmentedControl
-              className="mt-4 w-fit"
+              className="mt-4 w-fit max-w-full flex-wrap"
               value={view}
               onChange={setView}
               options={VIEW_OPTIONS}
               ariaLabel="Client history"
             />
 
-            {view === 'practice' ? (
+            {view === 'tests' ? (
+              <div className="mt-4"><TestHistory key={client.id} client={client} /></div>
+            ) : view === 'practice' ? (
               <div className="mt-4">
                 <PracticeHistory clientId={client.id} />
               </div>

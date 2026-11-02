@@ -85,6 +85,10 @@ export function todayYmd(): string {
   return `${now.getFullYear()}-${month}-${day}`;
 }
 
+export function instituteToday(): string {
+  return new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);
+}
+
 /** e.g. `9:05 AM` from the three practice-time controls. */
 export function formatTime12(hour: string, minute: string, meridiem: string): string {
   return `${hour}:${minute} ${meridiem}`;

@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 import {
   IconChart,
+  IconCalendar,
   IconGrid,
   IconPlusCircle,
   IconSettings,
@@ -12,6 +13,7 @@ import { cn } from '@/lib/cn';
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: IconGrid, end: true },
   { to: '/clients', label: 'Clients', icon: IconUsers, end: false },
+  { to: '/schedule', label: 'Upcoming schedule', icon: IconCalendar, end: true },
   { to: '/clients/new', label: 'Add client', icon: IconPlusCircle, end: true },
   { to: '/reports', label: 'Reports', icon: IconChart, end: true },
   { to: '/settings', label: 'Settings', icon: IconSettings, end: true },

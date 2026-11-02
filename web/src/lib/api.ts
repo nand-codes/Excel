@@ -5,6 +5,8 @@ import type {
   Payment,
   PaymentInput,
   PracticeSession,
+  ScheduledAppointment,
+  TestAppointment,
   User,
 } from './types';
 
@@ -146,4 +148,18 @@ export const api = {
 
   deletePractice: (id: string) =>
     request<{ ok: true; clientId: string }>('DELETE', `/practices/${encodeURIComponent(id)}`),
+
+  listTests: (clientId: string) =>
+    request<{ tests: TestAppointment[] }>('GET', `/clients/${encodeURIComponent(clientId)}/tests`)
+      .then((result) => result.tests),
+
+  addTest: (clientId: string, testDate: string) =>
+    request<{ test: TestAppointment }>('POST', '/tests', { clientId, testDate }),
+
+  deleteTest: (id: string) =>
+    request<{ ok: true; clientId: string }>('DELETE', `/tests/${encodeURIComponent(id)}`),
+
+  dailySchedule: (date: string) =>
+    request<{ appointments: ScheduledAppointment[] }>('GET', `/schedule?date=${encodeURIComponent(date)}`)
+      .then((result) => result.appointments),
 };

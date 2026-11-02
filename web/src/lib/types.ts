@@ -52,6 +52,25 @@ export interface PracticeSession {
   createdBy: string | null;
 }
 
+export interface TestAppointment {
+  id: string;
+  clientId: string;
+  testDate: string;
+  createdAt: string;
+  createdBy: string | null;
+}
+
+export interface ScheduledAppointment {
+  id: string;
+  clientId: string;
+  kind: 'practice' | 'test';
+  scheduledAt: string | null;
+  testDate: string | null;
+  name: string;
+  phone: string;
+  licenceType: string | null;
+}
+
 export interface User {
   id: string;
   username: string;

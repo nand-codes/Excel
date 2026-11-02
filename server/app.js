@@ -14,6 +14,7 @@ const authRoutes = require('./routes/auth');
 const clientRoutes = require('./routes/clients');
 const paymentRoutes = require('./routes/payments');
 const practiceRoutes = require('./routes/practices');
+const scheduleRoutes = require('./routes/schedule');
 
 function createApp() {
   const app = express();
@@ -81,6 +82,7 @@ function createApp() {
   app.use('/api/clients', clientRoutes);
   app.use('/api', paymentRoutes);
   app.use('/api', practiceRoutes);
+  app.use('/api', scheduleRoutes);
 
   app.use('/api', (_req, res) => {
     res.status(404).json({ error: 'not_found', message: 'Unknown endpoint.' });

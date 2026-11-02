@@ -236,6 +236,31 @@ async function main() {
   check('payment can be deleted', removedPayment.status === 200 && removedPayment.body.total === 500.5);
 
   console.log('\nBulk import');
+  console.log('\nTest and practice schedule');
+  const testDate = '2099-06-15';
+  check('schedule requires authentication', (await stranger('GET', `/api/schedule?date=${testDate}`)).status === 401);
+  check('test creation requires authentication', (await stranger('POST', '/api/tests', { clientId, testDate })).status === 401);
+  for (const invalidDate of ['', '2099-02-30', 'not-a-date', '2020-01-01']) {
+    check(`invalid test date rejected: ${invalidDate}`, (await bob('POST', '/api/tests', { clientId, testDate: invalidDate })).status === 400);
+  }
+  check('invalid schedule date rejected', (await bob('GET', '/api/schedule?date=2099-02-30')).status === 400);
+  check('missing test client rejected', (await bob('POST', '/api/tests', { clientId: 'missing', testDate })).status === 404);
+  const test = await bob('POST', '/api/tests', { clientId, testDate });
+  check('test date saved', test.status === 201 && test.body.test.testDate === testDate && test.body.test.createdBy === 'Smoke Staff');
+  const duplicateTest = await bob('POST', '/api/tests', { clientId, testDate });
+  check('same client and date are not duplicated', duplicateTest.body.test.id === test.body.test.id);
+  check('test history visible to another user', (await alice('GET', `/api/clients/${clientId}/tests`)).body.tests.length === 1);
+  const practice = await bob('POST', '/api/practices', { clientId, scheduledAt: '2099-06-14T18:30:00.000Z' });
+  await bob('POST', '/api/practices', { clientId, scheduledAt: '2099-06-15T18:30:00.000Z' });
+  const schedule = await alice('GET', `/api/schedule?date=${testDate}`);
+  check('daily schedule contains test and practice', schedule.status === 200 && schedule.body.appointments.length === 2);
+  check('practice belongs to India calendar day', schedule.body.appointments.some((entry) => entry.id === practice.body.practice.id));
+  check('schedule includes client details', schedule.body.appointments.every((entry) => entry.name === 'Edited By Bob' && entry.phone === '9876543210'));
+  check('empty day returns no appointments', (await alice('GET', '/api/schedule?date=2099-06-17')).body.appointments.length === 0);
+  check('test can be deleted', (await bob('DELETE', `/api/tests/${test.body.test.id}`)).status === 200);
+  check('deleted test leaves schedule', (await alice('GET', `/api/schedule?date=${testDate}`)).body.appointments.length === 1);
+  await bob('POST', '/api/tests', { clientId, testDate });
+
   const bulk = await alice('POST', '/api/clients/bulk', {
     clients: [
       { ...sampleClient({ name: 'Import One', phone: '9111111111', alternatePhone: null }), id: 'c_import_1' },
@@ -258,6 +283,8 @@ async function main() {
   const deleted = await alice('DELETE', `/api/clients/${clientId}`);
   check('client can be deleted', deleted.status === 200);
   check('payments cascade away with the client', getStore().getPaymentsByClient(clientId).length === 0);
+  check('tests cascade away with the client', getStore().getTestsByClient(clientId).length === 0);
+  check('schedule clears with deleted client', getStore().getDailySchedule(testDate).length === 0);
 
   const adminClear = await alice('DELETE', '/api/clients');
   check('admin can clear all data', adminClear.status === 200);

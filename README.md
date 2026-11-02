@@ -50,6 +50,22 @@ npm run web:build
 npm run server       # http://127.0.0.1:4000
 ```
 
+## Practice and test dates
+
+Open a client's details and choose **Practice day** or **Inform test date**.
+Test dates are saved before WhatsApp opens with a confirmation message; press Send
+in WhatsApp to deliver it. The **Test dates** history also supports resending a
+confirmation or removing an incorrect date. To reschedule, remove the old date
+and register the replacement.
+
+**Upcoming schedule** lists practice sessions and tests for the selected day,
+with All / Practice / Tests filters and client name or phone search. Daily boundaries
+and practice times in this view use India time (Asia/Kolkata). Test appointments
+are date-only. Existing practice history is included automatically.
+
+The test-appointment table is created automatically when the updated server starts.
+SQLite snapshots include appointments; client-only CSV/JSON exports do not.
+
 ## Accounts
 
 | Command | What it does |

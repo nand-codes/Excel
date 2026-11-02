@@ -89,6 +89,18 @@ function createClientStore(dbFilePath) {
     );
 
     CREATE INDEX IF NOT EXISTS idx_practice_client ON practice_sessions(client_id);
+    CREATE INDEX IF NOT EXISTS idx_practice_scheduled ON practice_sessions(scheduled_at);
+
+    CREATE TABLE IF NOT EXISTS test_appointments (
+      id TEXT PRIMARY KEY,
+      client_id TEXT NOT NULL,
+      test_date TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      created_by TEXT,
+      UNIQUE(client_id, test_date),
+      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_test_date ON test_appointments(test_date);
 
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
@@ -227,6 +239,33 @@ function createClientStore(dbFilePath) {
   `);
   const selectPracticeStmt = db.prepare(`SELECT ${PRACTICE_COLUMNS} FROM practice_sessions WHERE id = ?`);
   const deletePracticeStmt = db.prepare('DELETE FROM practice_sessions WHERE id = ?');
+
+  const TEST_COLUMNS = `id, client_id AS clientId, test_date AS testDate,
+    created_at AS createdAt, created_by AS createdBy`;
+  const insertTestStmt = db.prepare(`
+    INSERT INTO test_appointments (id, client_id, test_date, created_at, created_by)
+    VALUES ($id, $clientId, $testDate, $createdAt, $createdBy)
+    ON CONFLICT(client_id, test_date) DO NOTHING
+  `);
+  const selectTestStmt = db.prepare(`SELECT ${TEST_COLUMNS} FROM test_appointments WHERE id = ?`);
+  const selectTestsByClientStmt = db.prepare(`
+    SELECT ${TEST_COLUMNS} FROM test_appointments WHERE client_id = ? ORDER BY test_date DESC
+  `);
+  const deleteTestStmt = db.prepare('DELETE FROM test_appointments WHERE id = ?');
+  const dailyScheduleStmt = db.prepare(`
+    SELECT appointment.id AS id, appointment.client_id AS clientId, 'practice' AS kind,
+      appointment.scheduled_at AS scheduledAt, NULL AS testDate,
+      client.name, client.phone, client.licence_type AS licenceType
+    FROM practice_sessions appointment JOIN clients client ON client.id = appointment.client_id
+    WHERE appointment.scheduled_at >= $start AND appointment.scheduled_at < $end
+    UNION ALL
+    SELECT appointment.id AS id, appointment.client_id AS clientId, 'test' AS kind,
+      NULL AS scheduledAt, appointment.test_date AS testDate,
+      client.name, client.phone, client.licence_type AS licenceType
+    FROM test_appointments appointment JOIN clients client ON client.id = appointment.client_id
+    WHERE appointment.test_date = $date
+    ORDER BY scheduledAt, name, id
+  `);
 
   const insertUserStmt = db.prepare(`
     INSERT INTO users (id, username, display_name, password_hash, role, created_at)
@@ -413,6 +452,29 @@ function createClientStore(dbFilePath) {
     },
 
     // ── Users ────────────────────────────────────────────────────
+    addTest({ id, clientId, testDate, createdBy }) {
+      insertTestStmt.run({ id, clientId, testDate, createdAt: new Date().toISOString(), createdBy: optionalText(createdBy, 80) });
+      return selectTestsByClientStmt.all(clientId).find((entry) => entry.testDate === testDate);
+    },
+
+    getTest(id) {
+      return selectTestStmt.get(String(id)) || null;
+    },
+
+    getTestsByClient(clientId) {
+      return selectTestsByClientStmt.all(String(clientId));
+    },
+
+    deleteTest(id) {
+      return deleteTestStmt.run(String(id)).changes > 0;
+    },
+
+    getDailySchedule(date) {
+      const start = new Date(`${date}T00:00:00+05:30`);
+      const end = new Date(start.getTime() + 86400000);
+      return dailyScheduleStmt.all({ date, start: start.toISOString(), end: end.toISOString() });
+    },
+
     createUser({ id, username, displayName, passwordHash, role, createdAt }) {
       insertUserStmt.run({
         id: String(id),

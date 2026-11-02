@@ -49,6 +49,19 @@ CREATE TABLE IF NOT EXISTS practice_sessions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_practice_client ON practice_sessions(client_id);
+CREATE INDEX IF NOT EXISTS idx_practice_scheduled ON practice_sessions(scheduled_at);
+
+CREATE TABLE IF NOT EXISTS test_appointments (
+  id TEXT PRIMARY KEY,
+  client_id TEXT NOT NULL,
+  test_date TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  created_by TEXT,
+  UNIQUE(client_id, test_date),
+  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_test_date ON test_appointments(test_date);
 
 -- Staff accounts. Created only through `npm run user:add`; there is no self-signup.
 CREATE TABLE IF NOT EXISTS users (

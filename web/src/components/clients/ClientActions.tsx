@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { ClientDetailSheet } from '@/components/clients/ClientDetailSheet';
 import { PaymentSheet } from '@/components/clients/PaymentSheet';
 import { PracticeSheet } from '@/components/clients/PracticeSheet';
+import { TestSheet } from '@/components/clients/TestSheet';
 import { ConfirmSheet } from '@/components/ui/ConfirmSheet';
 import { useToast } from '@/components/ui/Toast';
 import { printClientCard } from '@/lib/print';
@@ -17,6 +18,7 @@ interface ClientActionsValue {
   remove: (client: Client) => void;
   addPayment: (client: Client) => void;
   schedulePractice: (client: Client) => void;
+  scheduleTest: (client: Client) => void;
   printCard: (client: Client) => void;
 }
 
@@ -36,6 +38,7 @@ export function ClientActionsProvider({ children }: { children: ReactNode }) {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [practiceId, setPracticeId] = useState<string | null>(null);
+  const [testId, setTestId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const find = useCallback(
@@ -46,22 +49,24 @@ export function ClientActionsProvider({ children }: { children: ReactNode }) {
   const detail = find(detailId);
   const paymentTarget = find(paymentId);
   const practiceTarget = find(practiceId);
+  const testTarget = find(testId);
   const deleteTarget = find(deleteId);
 
   // Somebody else may delete the record while a sheet is open.
   useEffect(() => {
     if (!clients) return;
-    const openIds = [detailId, paymentId, practiceId, deleteId].filter(Boolean) as string[];
+    const openIds = [detailId, paymentId, practiceId, testId, deleteId].filter(Boolean) as string[];
     const vanished = openIds.filter((id) => !clients.some((entry) => entry.id === id));
     if (!vanished.length) return;
 
     if (detailId && vanished.includes(detailId)) setDetailId(null);
     if (paymentId && vanished.includes(paymentId)) setPaymentId(null);
     if (practiceId && vanished.includes(practiceId)) setPracticeId(null);
+    if (testId && vanished.includes(testId)) setTestId(null);
     if (deleteId && vanished.includes(deleteId)) setDeleteId(null);
 
     toast('That client is no longer in the database.', 'info');
-  }, [clients, detailId, paymentId, practiceId, deleteId, toast]);
+  }, [clients, detailId, paymentId, practiceId, testId, deleteId, toast]);
 
   const value = useMemo<ClientActionsValue>(
     () => ({
@@ -73,6 +78,7 @@ export function ClientActionsProvider({ children }: { children: ReactNode }) {
       remove: (client) => setDeleteId(client.id),
       addPayment: (client) => setPaymentId(client.id),
       schedulePractice: (client) => setPracticeId(client.id),
+      scheduleTest: (client) => setTestId(client.id),
       printCard: (client) => {
         printClientCard(client);
         toast('Opening print preview…', 'info');
@@ -104,11 +110,13 @@ export function ClientActionsProvider({ children }: { children: ReactNode }) {
         onPrintCard={value.printCard}
         onAddPayment={value.addPayment}
         onSchedulePractice={value.schedulePractice}
+        onScheduleTest={value.scheduleTest}
       />
 
       <PaymentSheet client={paymentTarget} onClose={() => setPaymentId(null)} />
 
       <PracticeSheet client={practiceTarget} onClose={() => setPracticeId(null)} />
+      <TestSheet client={testTarget} onClose={() => setTestId(null)} />
 
       <ConfirmSheet
         open={Boolean(deleteTarget)}
@@ -116,7 +124,7 @@ export function ClientActionsProvider({ children }: { children: ReactNode }) {
         title="Delete this client?"
         description={
           deleteTarget
-            ? `"${deleteTarget.name}" will be permanently removed, along with their payment history.`
+            ? `"${deleteTarget.name}" will be permanently removed, along with their payments, practice sessions and test dates.`
             : 'This action cannot be undone.'
         }
         confirmLabel={deleteClient.isPending ? 'Deleting…' : 'Delete'}

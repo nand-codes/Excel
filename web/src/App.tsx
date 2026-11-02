@@ -15,6 +15,7 @@ import { DashboardPage } from '@/pages/DashboardPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { ReportsPage } from '@/pages/ReportsPage';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { SchedulePage } from '@/pages/SchedulePage';
 
 function pageTitle(pathname: string): string {
   if (pathname === '/') return 'Dashboard';
@@ -23,6 +24,7 @@ function pageTitle(pathname: string): string {
   if (pathname.startsWith('/clients/') && pathname.endsWith('/edit')) return 'Edit Client';
   if (pathname === '/reports') return 'Reports & Analytics';
   if (pathname === '/settings') return 'Settings';
+  if (pathname === '/schedule') return 'Upcoming Schedule';
   return 'Excel Driving Institute';
 }
 
@@ -88,6 +90,7 @@ function AppShell({ user }: { user: User }) {
               <Routes>
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/clients" element={<ClientsPage />} />
+                <Route path="/schedule" element={<SchedulePage />} />
                 <Route path="/clients/new" element={<ClientFormPage />} />
                 <Route path="/clients/:id/edit" element={<ClientFormPage />} />
                 <Route path="/reports" element={<ReportsPage />} />

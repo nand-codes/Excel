@@ -131,3 +131,7 @@ export function practiceMessage(
     `at ${time12} for driving practice. Thank you. — Excel Driving Institute`
   );
 }
+
+export function testMessage(client: Pick<Client, 'name'>, dateYmd: string): string {
+  return `Dear ${client.name}, your driving test date is confirmed for ${formatLongDate(dateYmd)}. Thank you. - Excel Driving Institute`;
+}

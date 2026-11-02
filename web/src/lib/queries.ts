@@ -8,6 +8,8 @@ export const queryKeys = {
   clients: ['clients'] as const,
   payments: (clientId: string) => ['payments', clientId] as const,
   practices: (clientId: string) => ['practices', clientId] as const,
+  tests: (clientId: string) => ['tests', clientId] as const,
+  schedule: ['schedule'] as const,
 };
 
 /** Resolves to null when nobody is signed in, so the app can show the login screen. */
@@ -48,6 +50,7 @@ export function useSaveClient() {
     }) => api.saveClient(client, expectedUpdatedAt),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.schedule });
     },
   });
 }
@@ -58,6 +61,7 @@ export function useDeleteClient() {
     mutationFn: (id: string) => api.deleteClient(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.schedule });
     },
   });
 }
@@ -68,6 +72,7 @@ export function useClearClients() {
     mutationFn: () => api.clearClients(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.clients });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.schedule });
     },
   });
 }
@@ -127,6 +132,7 @@ export function useAddPractice() {
       api.addPractice(clientId, scheduledAt),
     onSuccess: (_result, { clientId }) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.practices(clientId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.schedule });
     },
   });
 }
@@ -137,7 +143,49 @@ export function useDeletePractice() {
     mutationFn: (id: string) => api.deletePractice(id),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.practices(result.clientId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.schedule });
     },
+  });
+}
+
+export function useTests(clientId: string | null) {
+  return useQuery({
+    queryKey: queryKeys.tests(clientId ?? 'none'),
+    queryFn: () => api.listTests(clientId as string),
+    enabled: Boolean(clientId),
+    staleTime: 10 * 1000,
+  });
+}
+
+export function useAddTest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ clientId, testDate }: { clientId: string; testDate: string }) => api.addTest(clientId, testDate),
+    onSuccess: (_result, { clientId }) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.tests(clientId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.schedule });
+    },
+  });
+}
+
+export function useDeleteTest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: api.deleteTest,
+    onSuccess: ({ clientId }) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.tests(clientId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.schedule });
+    },
+  });
+}
+
+export function useDailySchedule(date: string) {
+  return useQuery({
+    queryKey: [...queryKeys.schedule, date],
+    queryFn: () => api.dailySchedule(date),
+    enabled: Boolean(date),
+    staleTime: 10 * 1000,
+    refetchInterval: 30 * 1000,
   });
 }
 
@@ -159,6 +207,8 @@ export function useLogout() {
     onSuccess: () => {
       queryClient.setQueryData(queryKeys.session, null);
       queryClient.removeQueries({ queryKey: queryKeys.clients });
+      queryClient.removeQueries({ queryKey: queryKeys.schedule });
+      queryClient.removeQueries({ queryKey: ['tests'] });
     },
   });
 }

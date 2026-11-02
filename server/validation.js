@@ -188,6 +188,28 @@ function validatePractice(input) {
   };
 }
 
+function isCalendarDate(value) {
+  if (typeof value !== 'string' || !YMD_RE.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+function instituteToday() {
+  return new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10);
+}
+
+function validateTest(input) {
+  const fields = {};
+  const clientId = text(input?.clientId);
+  const testDate = text(input?.testDate);
+  if (!ID_RE.test(clientId)) fields.clientId = 'Select a valid client.';
+  if (!isCalendarDate(testDate)) fields.testDate = 'Select a valid test date.';
+  else if (testDate < instituteToday()) fields.testDate = 'Pick today or a future date.';
+  return Object.keys(fields).length
+    ? { ok: false, fields }
+    : { ok: true, fields, value: { id: newId('test'), clientId, testDate } };
+}
+
 function isoOrNow(value) {
   if (!value) return new Date().toISOString();
   const parsed = new Date(value);
@@ -199,4 +221,4 @@ function newId(prefix) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-module.exports = { validateClient, validatePayment, validatePractice, ageFromDob, newId, PHONE_RE };
+module.exports = { validateClient, validatePayment, validatePractice, validateTest, isCalendarDate, instituteToday, ageFromDob, newId, PHONE_RE };
